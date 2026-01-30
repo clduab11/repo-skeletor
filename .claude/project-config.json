@@ -1,0 +1,19 @@
+{
+  "name": "repo-skeletor",
+  "description": "Solo dev workflow template with Claude Code, Gemini, Continue.dev, Linear, and Notion integration",
+  "integrations": {
+    "linear": {
+      "enabled": true,
+      "sync_direction": "bidirectional"
+    },
+    "notion": {
+      "enabled": true,
+      "sync_direction": "bidirectional"
+    }
+  },
+  "ai_assistant": {
+    "provider": "claude",
+    "model": "claude-3-5-sonnet-20241022",
+    "max_tokens": 8096
+  }
+}

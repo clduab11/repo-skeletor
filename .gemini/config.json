@@ -1,0 +1,14 @@
+{
+  "name": "repo-skeletor",
+  "description": "Gemini AI configuration for code assistance",
+  "model": "gemini-2.0-flash-exp",
+  "features": {
+    "code_completion": true,
+    "code_review": true,
+    "documentation": true
+  },
+  "integrations": {
+    "linear": true,
+    "notion": true
+  }
+}

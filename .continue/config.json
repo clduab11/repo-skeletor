@@ -1,0 +1,96 @@
+{
+  "models": [
+    {
+      "title": "Claude 3.5 Sonnet",
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022",
+      "apiKey": "$ANTHROPIC_API_KEY"
+    },
+    {
+      "title": "Gemini Flash",
+      "provider": "gemini",
+      "model": "gemini-2.0-flash-exp",
+      "apiKey": "$GEMINI_API_KEY"
+    }
+  ],
+  "tabAutocompleteModel": {
+    "title": "Claude 3.5 Sonnet",
+    "provider": "anthropic",
+    "model": "claude-3-5-sonnet-20241022"
+  },
+  "embeddingsProvider": {
+    "provider": "openai",
+    "model": "text-embedding-3-small"
+  },
+  "contextProviders": [
+    {
+      "name": "code",
+      "params": {}
+    },
+    {
+      "name": "docs",
+      "params": {}
+    },
+    {
+      "name": "diff",
+      "params": {}
+    },
+    {
+      "name": "terminal",
+      "params": {}
+    },
+    {
+      "name": "problems",
+      "params": {}
+    },
+    {
+      "name": "folder",
+      "params": {}
+    },
+    {
+      "name": "codebase",
+      "params": {}
+    }
+  ],
+  "slashCommands": [
+    {
+      "name": "edit",
+      "description": "Edit selected code"
+    },
+    {
+      "name": "comment",
+      "description": "Write comments for the selected code"
+    },
+    {
+      "name": "share",
+      "description": "Export the current chat session to markdown"
+    },
+    {
+      "name": "cmd",
+      "description": "Generate a shell command"
+    },
+    {
+      "name": "commit",
+      "description": "Generate a git commit message"
+    }
+  ],
+  "customCommands": [
+    {
+      "name": "test",
+      "prompt": "Write a comprehensive test suite for the selected code",
+      "description": "Generate tests"
+    },
+    {
+      "name": "linear",
+      "prompt": "Create or update a Linear issue based on this code change",
+      "description": "Sync with Linear"
+    },
+    {
+      "name": "notion",
+      "prompt": "Document this code in Notion",
+      "description": "Sync with Notion"
+    }
+  ],
+  "allowAnonymousTelemetry": false,
+  "docs": []
+}
