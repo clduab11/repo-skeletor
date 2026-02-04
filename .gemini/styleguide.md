@@ -1,8 +1,7 @@
 # {{PROJECT_NAME}} Coding Style Guide
 
 **Project Type:** {{PROJECT_TYPE}}  
-**Version:** 1.0.0  
-**Last Updated:** 2024
+**Version:** 1.0.0
 
 ---
 
