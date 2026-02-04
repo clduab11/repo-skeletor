@@ -2,9 +2,23 @@
 
 Welcome to the **repo-skeletor** documentation! This repository provides a maximally configured repository template for AI-augmented solo developer workflows.
 
+---
+
+## ⚠️ **IMPORTANT: This is a TEMPLATE Repository**
+
+**Do NOT push project-specific changes to this repository!**
+
+📖 **[Read the Proper Template Usage Guide →](./Proper-Template-Usage.md)**
+
+⚠️ **[Learn from Common Mistakes →](./Common-Mistakes.md)**
+
+---
+
 ## 📚 Documentation
 
-### Getting Started
+### 🚀 Getting Started
+- **[Proper Template Usage](./Proper-Template-Usage.md)** - ⭐ **START HERE** - Correct way to use this template
+- **[Common Mistakes](./Common-Mistakes.md)** - ⚠️ Learn what NOT to do (REP-11 case study)
 - **[Quick Start Guide](./Quick-Start-Guide.md)** - Get up and running in minutes
 - **[Template Structure](./Template-Structure.md)** - Understand the repository organization
 
@@ -46,6 +60,13 @@ For questions or issues:
 1. Check the relevant documentation section above
 2. Review existing [GitHub Issues](https://github.com/clduab11/repo-skeletor/issues)
 3. Create a new issue with the appropriate label
+
+## 🤝 Contributing
+
+Want to improve the template itself?
+- Read the [CONTRIBUTING.md](../../CONTRIBUTING.md) guide
+- Understand the difference between template contributions vs. project work
+- Submit PRs for improvements to template files, workflows, or documentation
 
 ---
 

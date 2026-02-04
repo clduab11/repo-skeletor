@@ -129,12 +129,20 @@ replace_placeholders() {
 }
 
 # Process all config files
+replace_placeholders "settings.json"
 replace_placeholders ".claude/settings.json"
 replace_placeholders ".gemini/config.yaml"
 replace_placeholders ".gemini/styleguide.md"
 replace_placeholders ".continue/config.yaml"
 replace_placeholders ".continue/mcpServers/mcp-servers.yaml"
 replace_placeholders "README.md"
+
+# Process workflow files if they exist in root
+for workflow in ci.yml claude.yml deploy.yml linear-to-notion-sync.yml notion-spec-to-linear.yml; do
+    if [[ -f "$workflow" ]]; then
+        replace_placeholders "$workflow"
+    fi
+done
 
 # Create .env.example
 echo ""
