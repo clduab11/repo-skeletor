@@ -2,6 +2,24 @@
 
 Get your AI-augmented development environment up and running in minutes.
 
+---
+
+## ⚠️ CRITICAL: Read This First!
+
+**This is a TEMPLATE repository. Do NOT push project-specific changes here!**
+
+Before you start:
+1. ✅ Use GitHub's **"Use this template"** feature to create YOUR repository
+2. ✅ Clone **YOUR new repository** (not clduab11/repo-skeletor)
+3. ✅ Verify `git remote -v` shows YOUR repository
+4. ❌ DO NOT clone repo-skeletor directly and push changes back
+
+📖 **[Read Proper Template Usage Guide](./Proper-Template-Usage.md)** for detailed instructions.
+
+⚠️ **[Learn from Common Mistakes](./Common-Mistakes.md)** to avoid pitfalls.
+
+---
+
 ## Prerequisites
 
 - **Git** installed on your machine
@@ -12,23 +30,44 @@ Get your AI-augmented development environment up and running in minutes.
 
 ## Step 1: Clone or Use Template
 
-### Option A: Use as GitHub Template
+### Option A: Use as GitHub Template (✅ RECOMMENDED)
 1. Go to [repo-skeletor repository](https://github.com/clduab11/repo-skeletor)
 2. Click **"Use this template"** → **"Create a new repository"**
-3. Name your repository and create it
-4. Clone your new repository:
+3. **Important:** Name your repository YOUR_PROJECT_NAME (NOT "repo-skeletor")
+4. Create the repository
+5. Clone your new repository:
    ```bash
    git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
    cd YOUR_REPO_NAME
    ```
 
-### Option B: Clone Directly
+**⚠️ Before continuing, verify your git remote:**
+```bash
+git remote -v
+# Should show: YOUR_USERNAME/YOUR_REPO_NAME
+# Should NOT show: clduab11/repo-skeletor
+```
+
+If you see `clduab11/repo-skeletor`, **STOP** and follow the [Proper Template Usage Guide](./Proper-Template-Usage.md).
+
+### Option B: Clone Directly (⚠️ Advanced - Easy to Mess Up)
 ```bash
 git clone https://github.com/clduab11/repo-skeletor.git my-project
 cd my-project
+
+# CRITICAL: Change the remote URL immediately!
+git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+
+# Verify the change
+git remote -v
+# Must show YOUR repository, not clduab11/repo-skeletor
+
+# Remove template git history (optional but recommended)
 rm -rf .git
 git init
 ```
+
+**⚠️ Warning:** Option B is error-prone. If you forget to change the remote URL, you'll push to the template repository! Use Option A instead.
 
 ## Step 2: Run Setup Script
 
@@ -133,6 +172,37 @@ Example:
 ```bash
 git checkout -b clduab11/PAR-123-add-user-auth
 ```
+
+## Step 7.5: 🛡️ Pre-Commit Safety Check
+
+**Before making your first commit, verify you're in the right repository:**
+
+```bash
+# Double-check your git remote
+git remote -v
+
+# Should show YOUR repository URL
+# Example: https://github.com/YOUR_USERNAME/YOUR_PROJECT.git
+
+# Should NOT show template URL
+# Bad: https://github.com/clduab11/repo-skeletor.git
+```
+
+**If you see `clduab11/repo-skeletor`, STOP IMMEDIATELY!**
+
+You're about to push to the template repository. Fix it:
+```bash
+git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_PROJECT.git
+git remote -v  # Verify the change
+```
+
+**Checklist before first commit:**
+- [ ] I used "Use this template" to create a NEW repository
+- [ ] I cloned MY new repository (not repo-skeletor)  
+- [ ] `git remote -v` shows MY repository URL
+- [ ] I ran `./setup.sh` successfully
+- [ ] No `{{PLACEHOLDERS}}` remain in config files
+- [ ] I am 100% certain I'm NOT pushing to clduab11/repo-skeletor
 
 ## Step 8: Test AI Integration
 

@@ -1,0 +1,489 @@
+# Gemini AI Configuration for {{PROJECT_NAME}}
+# Project Type: {{PROJECT_TYPE}}
+# Reference: https://ai.google.dev/gemini-api/docs
+
+name: "{{PROJECT_NAME}}"
+version: "1.0.0"
+schema: "gemini-v1"
+
+# ============================================
+# PROJECT METADATA
+# ============================================
+project:
+  name: "{{PROJECT_NAME}}"
+  description: "{{PROJECT_DESCRIPTION}}"
+  type: "{{PROJECT_TYPE}}"  # api | web | cli | lib
+  domain: "{{PROJECT_DOMAIN}}"
+  repository: "{{GITHUB_REPOSITORY}}"
+  
+# ============================================
+# MODEL CONFIGURATION
+# ============================================
+models:
+  # Primary model for complex reasoning
+  default:
+    name: "gemini-2.0-flash-exp"
+    apiKey: "${GOOGLE_AI_API_KEY}"
+    temperature: 0.7
+    topP: 0.95
+    topK: 40
+    maxOutputTokens: 8192
+    
+  # Fast model for quick tasks
+  fast:
+    name: "gemini-1.5-flash-8b"
+    apiKey: "${GOOGLE_AI_API_KEY}"
+    temperature: 0.5
+    topP: 0.9
+    maxOutputTokens: 4096
+    
+  # Pro model for deep analysis
+  pro:
+    name: "gemini-2.0-flash-thinking-exp"
+    apiKey: "${GOOGLE_AI_API_KEY}"
+    temperature: 0.8
+    topP: 0.95
+    topK: 64
+    maxOutputTokens: 8192
+    thinkingMode: true
+
+# ============================================
+# SAFETY SETTINGS
+# ============================================
+safetySettings:
+  - category: "HARM_CATEGORY_HARASSMENT"
+    threshold: "BLOCK_MEDIUM_AND_ABOVE"
+  - category: "HARM_CATEGORY_HATE_SPEECH"
+    threshold: "BLOCK_MEDIUM_AND_ABOVE"
+  - category: "HARM_CATEGORY_SEXUALLY_EXPLICIT"
+    threshold: "BLOCK_MEDIUM_AND_ABOVE"
+  - category: "HARM_CATEGORY_DANGEROUS_CONTENT"
+    threshold: "BLOCK_MEDIUM_AND_ABOVE"
+
+# ============================================
+# SYSTEM INSTRUCTIONS
+# ============================================
+systemInstructions: |
+  You are an expert software engineer working on {{PROJECT_NAME}}.
+  
+  PROJECT CONTEXT:
+  - Type: {{PROJECT_TYPE}}
+  - Description: {{PROJECT_DESCRIPTION}}
+  - Team: Parallax Analytics (PAR)
+  - Domain: {{PROJECT_DOMAIN}}
+  
+  ALWAYS follow these guidelines:
+  1. Read and adhere to .gemini/styleguide.md for all code
+  2. Use TypeScript with strict mode enabled
+  3. Write comprehensive tests for all new features
+  4. Use conventional commit messages (feat:, fix:, docs:, etc.)
+  5. Document all public APIs with JSDoc comments
+  6. Validate all user inputs and handle errors gracefully
+  7. Follow security best practices (no hardcoded secrets)
+  8. Use environment variables for configuration
+  
+  TESTING:
+  - Framework: Vitest
+  - Coverage minimum: 80%
+  - Write unit tests for business logic
+  - Write integration tests for APIs
+  
+  GIT WORKFLOW:
+  - Branch naming: {{USER}}/PAR-XXX-description
+  - Commit format: type(scope): subject
+  - Create draft PRs for review
+  
+  INTEGRATIONS:
+  - Linear: Track issues and progress
+  - Notion: Specifications and documentation
+  - GitHub: Code review and CI/CD
+
+# ============================================
+# CODE GENERATION RULES
+# ============================================
+codeGenerationRules:
+  typescript:
+    strictMode: true
+    noImplicitAny: true
+    explicitFunctionReturnTypes: true
+    preferConst: true
+    preferArrowFunctions: true
+    
+  naming:
+    variables: "camelCase"
+    constants: "SCREAMING_SNAKE_CASE"
+    functions: "camelCase"
+    classes: "PascalCase"
+    interfaces: "PascalCase"
+    types: "PascalCase"
+    files: "kebab-case"
+    
+  documentation:
+    jsDocForPublicApis: true
+    includeExamples: true
+    includeThrows: true
+    includeTypeParameters: true
+    
+  errorHandling:
+    useCustomErrors: true
+    alwaysLogErrors: true
+    requireErrorHandling: true
+    validateInputs: true
+    
+  testing:
+    testFilePattern: "*.test.ts"
+    minCoverage: 80
+    mockExternalServices: true
+    useAAA_Pattern: true  # Arrange, Act, Assert
+
+# ============================================
+# CONTEXT AWARENESS
+# ============================================
+context:
+  # Files to always include in context
+  alwaysInclude:
+    - "README.md"
+    - "package.json"
+    - "tsconfig.json"
+    - ".gemini/styleguide.md"
+    - "CONTRIBUTING.md"
+    
+  # Patterns to exclude from context
+  exclude:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - ".git/**"
+    - "coverage/**"
+    - "*.lock"
+    - "*.log"
+    - ".env*"
+    - "*.key"
+    - "*.pem"
+    
+  # Maximum context window utilization
+  maxContextFiles: 30
+  maxTokensPerFile: 10000
+
+# ============================================
+# INTEGRATIONS
+# ============================================
+integrations:
+  linear:
+    enabled: true
+    apiKey: "${LINEAR_API_KEY}"
+    teamKey: "PAR"
+    teamId: "{{LINEAR_TEAM_ID}}"
+    autoLinkIssues: true
+    createBranchFromIssue: true
+    
+  notion:
+    enabled: true
+    apiKey: "${NOTION_API_KEY}"
+    specDatabaseId: "{{NOTION_SPEC_DATABASE_ID}}"
+    wikiPageId: "{{NOTION_WIKI_PAGE_ID}}"
+    autoSync: true
+    syncInterval: 3600  # seconds
+    
+  github:
+    enabled: true
+    token: "${GITHUB_TOKEN}"
+    owner: "parallax-analytics"
+    repository: "{{GITHUB_REPOSITORY}}"
+    autoReview: true
+    createDraftPRs: true
+    
+  sentry:
+    enabled: false
+    dsn: "${SENTRY_DSN}"
+    organization: "parallax-analytics"
+    project: "{{PROJECT_NAME}}"
+
+# ============================================
+# CUSTOM PROMPTS
+# ============================================
+prompts:
+  codeReview: |
+    Review this code as a senior software engineer. Focus on:
+    
+    🔴 CRITICAL ISSUES:
+    - Security vulnerabilities (SQL injection, XSS, auth bypass)
+    - Data loss or corruption risks
+    - Memory leaks or resource exhaustion
+    
+    🟠 WARNINGS:
+    - Performance bottlenecks
+    - Race conditions or concurrency issues
+    - Incorrect error handling
+    - Breaking API changes
+    
+    🟡 SUGGESTIONS:
+    - Code organization and clarity
+    - Missing tests or documentation
+    - Inconsistent naming or style
+    - Potential future scalability issues
+    
+    For each issue:
+    1. Quote the problematic code
+    2. Explain why it's an issue
+    3. Suggest a specific fix with code example
+    
+  generateTests: |
+    Generate comprehensive tests for this code using Vitest.
+    
+    Requirements:
+    - Cover all public functions/methods
+    - Test happy path and edge cases
+    - Test error conditions
+    - Mock external dependencies
+    - Use AAA pattern (Arrange, Act, Assert)
+    - Include descriptive test names
+    - Aim for 100% code coverage
+    
+    Test structure:
+    ```typescript
+    describe('ComponentName', () => {
+      describe('methodName', () => {
+        it('should do X when Y', async () => {
+          // Arrange
+          // Act
+          // Assert
+        });
+      });
+    });
+    ```
+    
+  generateDocs: |
+    Generate JSDoc documentation for this code.
+    
+    Include:
+    - Brief description of purpose
+    - @param tags with type and description
+    - @returns tag with type and description
+    - @throws tags for all error conditions
+    - @example blocks demonstrating usage
+    - @since version tag
+    - @deprecated if applicable
+    
+    Example:
+    ```typescript
+    /**
+     * Retrieves a user by their unique identifier.
+     *
+     * @param userId - The unique identifier of the user
+     * @returns A promise that resolves to the user object
+     * @throws {ValidationError} If userId format is invalid
+     * @throws {NotFoundError} If user doesn't exist
+     *
+     * @example
+     * ```typescript
+     * const user = await getUserById('user_123');
+     * console.log(user.name);
+     * ```
+     *
+     * @since 1.0.0
+     */
+    ```
+    
+  generateLinearIssue: |
+    Create a Linear issue based on the current context.
+    
+    Format:
+    
+    **Title:** Clear, actionable title (50 chars max)
+    
+    **Description:**
+    Brief overview of what needs to be done and why.
+    
+    **Acceptance Criteria:**
+    - [ ] Criterion 1
+    - [ ] Criterion 2
+    - [ ] Criterion 3
+    
+    **Technical Notes:**
+    - Implementation details
+    - Files to modify
+    - Dependencies or blockers
+    - Estimated complexity: S/M/L/XL
+    
+    **Testing:**
+    - Test scenarios to cover
+    
+    **Related:**
+    - Linear issues: PAR-XXX
+    - PRs: #123
+    - Notion specs: [link]
+    
+  generateNotionSpec: |
+    Create a Notion-compatible specification document.
+    
+    Structure:
+    
+    # Feature Name
+    
+    ## Overview
+    High-level description and business value
+    
+    ## Requirements
+    ### Functional Requirements
+    - REQ-1: Description
+    - REQ-2: Description
+    
+    ### Non-Functional Requirements
+    - Performance targets
+    - Security requirements
+    - Scalability considerations
+    
+    ## Technical Design
+    ### Architecture
+    - System components
+    - Data flow
+    
+    ### API Contracts
+    ```typescript
+    // Request/response schemas
+    ```
+    
+    ### Data Models
+    ```typescript
+    // Entity definitions
+    ```
+    
+    ## Implementation Plan
+    1. Phase 1: ...
+    2. Phase 2: ...
+    
+    ## Testing Strategy
+    - Unit tests
+    - Integration tests
+    - E2E tests
+    
+    ## Rollout Plan
+    - Feature flags
+    - Monitoring
+    - Rollback strategy
+    
+    ## Open Questions
+    - Question 1?
+    - Question 2?
+
+# ============================================
+# GROUNDING & SEARCH
+# ============================================
+grounding:
+  enabled: true
+  # Use Google Search for up-to-date information
+  googleSearch:
+    enabled: true
+    dynamicThreshold: 0.7
+  
+  # Retrieve relevant context from external sources  
+  retrieval:
+    enabled: true
+    sources:
+      - type: "web"
+        patterns:
+          - "https://www.typescriptlang.org/docs/**"
+          - "https://react.dev/**"
+          - "https://nodejs.org/docs/**"
+      - type: "notion"
+        databaseId: "{{NOTION_SPEC_DATABASE_ID}}"
+
+# ============================================
+# CACHING
+# ============================================
+caching:
+  enabled: true
+  # Cache system instructions and context
+  cacheSystemInstructions: true
+  cacheContext: true
+  ttl: 3600  # seconds
+
+# ============================================
+# TOOLS & FUNCTION CALLING
+# ============================================
+tools:
+  # Allow Gemini to call these functions
+  functions:
+    - name: "searchCodebase"
+      description: "Search for code patterns across the codebase"
+      parameters:
+        type: "object"
+        properties:
+          query:
+            type: "string"
+            description: "Search query"
+          filePattern:
+            type: "string"
+            description: "File pattern (e.g., '*.ts')"
+        required: ["query"]
+        
+    - name: "getLinearIssue"
+      description: "Fetch details of a Linear issue"
+      parameters:
+        type: "object"
+        properties:
+          issueId:
+            type: "string"
+            description: "Linear issue ID (e.g., 'PAR-123')"
+        required: ["issueId"]
+        
+    - name: "getNotionPage"
+      description: "Fetch content from a Notion page"
+      parameters:
+        type: "object"
+        properties:
+          pageId:
+            type: "string"
+            description: "Notion page ID"
+        required: ["pageId"]
+        
+    - name: "runTests"
+      description: "Execute test suite"
+      parameters:
+        type: "object"
+        properties:
+          pattern:
+            type: "string"
+            description: "Test file pattern"
+          coverage:
+            type: "boolean"
+            description: "Include coverage report"
+
+# ============================================
+# RESPONSE FORMATTING
+# ============================================
+responseFormat:
+  markdown: true
+  codeBlocks:
+    includeLanguage: true
+    includePath: true
+    includeLineNumbers: false
+    
+# ============================================
+# LOGGING & MONITORING
+# ============================================
+logging:
+  level: "info"  # debug | info | warn | error
+  logRequests: true
+  logResponses: false
+  logErrors: true
+  
+monitoring:
+  enabled: true
+  trackTokenUsage: true
+  trackLatency: true
+  alertThresholds:
+    maxLatency: 30000  # ms
+    maxTokens: 1000000  # per day
+
+# ============================================
+# FEATURE FLAGS
+# ============================================
+features:
+  multimodalInput: true
+  codeExecution: false
+  webSearch: true
+  contextCaching: true
+  streamingResponses: true
+  parallelFunctionCalls: true

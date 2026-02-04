@@ -2,17 +2,43 @@
 
 > Parallax Analytics Solo Developer Workflow Template
 
+---
+
+## ⚠️ **IMPORTANT: This is a TEMPLATE Repository**
+
+**🚨 DO NOT push project-specific changes to this repository!**
+
+This repository is a **template** for creating new projects. To use it correctly:
+
+1. Click **"Use this template"** → **"Create a new repository"** on GitHub
+2. Clone **YOUR new repository** (not this one)
+3. Run `./setup.sh` in your new repository
+4. Make changes in YOUR repository
+
+📖 **[Read the Proper Template Usage Guide →](./docs/wiki/Proper-Template-Usage.md)**
+
+⚠️ **[Common Mistakes to Avoid →](./docs/wiki/Common-Mistakes.md)**
+
+---
+
 A maximally configured repository template integrating **Claude Code**, **Gemini**, **Continue.dev**, **Linear**, **Notion**, and **GitHub Actions** for an autonomous, AI-augmented development workflow.
 
 ## 📚 Documentation
 
 **[📖 View Complete Documentation Wiki →](./docs/wiki/Home.md)**
 
+### 🚀 Getting Started
+- **[Proper Template Usage](./docs/wiki/Proper-Template-Usage.md)** - **START HERE** - Correct way to use this template
+- **[Common Mistakes](./docs/wiki/Common-Mistakes.md)** - Learn what NOT to do
 - [Quick Start Guide](./docs/wiki/Quick-Start-Guide.md) - Get started in minutes
+
+### 📖 Understanding the Template
 - [Template Structure](./docs/wiki/Template-Structure.md) - Understand the repository
 - [GitHub Actions Architecture](./docs/wiki/GitHub-Actions-Architecture.md) - Workflow details
-- [Secrets & Environment Setup](./docs/wiki/Secrets-and-Environment-Setup.md) - API configuration
 - [Customization Guide](./docs/wiki/Customization-Guide.md) - Adapt to your needs
+
+### 🔧 Configuration
+- [Secrets & Environment Setup](./docs/wiki/Secrets-and-Environment-Setup.md) - API configuration
 - [Linear ↔ Notion Sync](./docs/wiki/Linear-Notion-Sync.md) - Integration setup
 
 ## 🏗️ Structure
