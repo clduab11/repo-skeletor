@@ -1,0 +1,107 @@
+#!/bin/bash
+# Pre-commit hook to prevent accidental commits to template repository
+# This hook can be installed by running: cp template/.git-hooks/pre-commit .git/hooks/
+
+# Colors
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Check if we're in the template repository
+REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
+
+if [[ "$REMOTE_URL" == *"clduab11/repo-skeletor"* ]]; then
+    echo -e "${RED}"
+    echo "╔═══════════════════════════════════════════════════╗"
+    echo "║  🚨 CRITICAL WARNING                              ║"
+    echo "║  You are about to commit to the TEMPLATE!        ║"
+    echo "╚═══════════════════════════════════════════════════╝"
+    echo -e "${NC}"
+    echo ""
+    echo -e "${RED}Your git remote points to: clduab11/repo-skeletor${NC}"
+    echo ""
+    echo "This is the TEMPLATE repository. You should NOT be committing"
+    echo "project-specific changes here!"
+    echo ""
+    echo -e "${YELLOW}Did you forget to:${NC}"
+    echo "1. Use 'Use this template' to create YOUR repository?"
+    echo "2. Clone YOUR repository instead of the template?"
+    echo "3. Change the git remote URL?"
+    echo ""
+    echo -e "${GREEN}To fix this:${NC}"
+    echo "  git remote set-url origin https://github.com/YOU/YOUR-PROJECT.git"
+    echo ""
+    read -p "Are you ABSOLUTELY SURE you want to commit to the template? (type 'YES' to proceed): " CONFIRM
+    if [[ "$CONFIRM" != "YES" ]]; then
+        echo -e "${RED}Commit cancelled. Please verify your repository setup.${NC}"
+        echo "📖 See: docs/wiki/Proper-Template-Usage.md"
+        exit 1
+    fi
+fi
+
+# Check for placeholders in key files
+KEY_FILES=(
+    "settings.json"
+    ".claude/settings.json"
+    ".gemini/config.yaml"
+    ".continue/config.yaml"
+)
+
+MISSING_PLACEHOLDERS=0
+for file in "${KEY_FILES[@]}"; do
+    if [[ -f "$file" ]]; then
+        if ! grep -q "{{PROJECT_NAME}}" "$file" 2>/dev/null; then
+            if [[ "$REMOTE_URL" == *"clduab11/repo-skeletor"* ]]; then
+                echo -e "${YELLOW}⚠️  Warning: $file is missing {{PROJECT_NAME}} placeholder${NC}"
+                MISSING_PLACEHOLDERS=1
+            fi
+        fi
+    fi
+done
+
+if [[ $MISSING_PLACEHOLDERS -eq 1 ]]; then
+    echo ""
+    echo -e "${YELLOW}Template files should contain placeholders like {{PROJECT_NAME}}.${NC}"
+    echo "If you're working on the template, ensure placeholders are preserved."
+    echo ""
+    read -p "Continue with commit? (yes/no): " CONFIRM
+    if [[ "$CONFIRM" != "yes" ]]; then
+        echo -e "${RED}Commit cancelled.${NC}"
+        exit 1
+    fi
+fi
+
+# Check for secrets
+SECRET_PATTERNS=(
+    "sk-ant-"
+    "lin_api_"
+    "secret_"
+    "ghp_"
+    "sk-proj-"
+    "API_KEY.*=.*[A-Za-z0-9]{20,}"
+)
+
+SECRETS_FOUND=0
+for pattern in "${SECRET_PATTERNS[@]}"; do
+    if git diff --cached | grep -qE "$pattern"; then
+        echo -e "${RED}⚠️  SECURITY WARNING: Possible secret detected in staged changes!${NC}"
+        echo "   Pattern: $pattern"
+        SECRETS_FOUND=1
+    fi
+done
+
+if [[ $SECRETS_FOUND -eq 1 ]]; then
+    echo ""
+    echo -e "${RED}NEVER commit API keys or secrets to git!${NC}"
+    echo "Use environment variables and .env files instead."
+    echo ""
+    read -p "Are you SURE these are not real secrets? (type 'YES' to proceed): " CONFIRM
+    if [[ "$CONFIRM" != "YES" ]]; then
+        echo -e "${RED}Commit cancelled. Please remove secrets from staged changes.${NC}"
+        exit 1
+    fi
+fi
+
+# All checks passed
+exit 0
