@@ -29,3 +29,12 @@ node_modules/
 
 # Pre-commit framework cache
 .pre-commit-cache/
+
+# Bootstrap commit-runner artifacts (PowerShell MCP handoff)
+.commit-v2.*
+.cleanup-v2.*
+.git-out-*.txt
+.git-done-*.txt
+.git-err-*.txt
+.git-run.ps1
+.gitprobe.txt
