@@ -1,0 +1,88 @@
+---
+/**
+ * Base.astro
+ *
+ * Shared HTML shell. Loads global CSS, font packages, sitewide header +
+ * footer, and the canonical meta block. All page-specific layouts compose
+ * Base via <slot/> rather than re-declaring <html>/<head>.
+ *
+ * Performance budget per project quality bar 5: CSS <50KB, JS <100KB per
+ * route. Self-hosted variable fonts are subset by @fontsource-variable;
+ * we preload the two display + body weights and lazy-load the remainder.
+ */
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Self-hosted typography. Order is intentional — variable face first so the
+// browser uses it in preference to the static fallbacks.
+import '@fontsource-variable/inter';
+import '@fontsource-variable/source-serif-4';
+import '@fontsource/jetbrains-mono/400.css';
+
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Open-graph type. 'website' for index pages, 'article' for essays. */
+  ogType?: 'website' | 'article';
+  /** Canonical path override; otherwise derived from request URL. */
+  canonical?: string;
+  /** Robots meta directive. Default: index, follow. */
+  robots?: string;
+  /** Suppress the sitewide header/footer (used by minimal landing variants). */
+  chrome?: boolean;
+}
+
+const {
+  title,
+  description,
+  ogType = 'website',
+  canonical,
+  robots = 'index, follow',
+  chrome = true,
+} = Astro.props;
+
+const siteOrigin = 'https://{{PROJECT_DOMAIN}}';
+const url = canonical ?? new URL(Astro.url.pathname, siteOrigin).toString();
+const ogImage = `${siteOrigin}/brand/lockup-master.svg`; // PNG fallback queued for v1.1
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#EEF1F4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#06080A" media="(prefers-color-scheme: dark)" />
+
+    <title>{title} — {{PROJECT_NAME}}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <link rel="canonical" href={url} />
+
+    <link rel="icon" type="image/svg+xml" href="/brand/mark-favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+
+    <!-- Open Graph / Twitter — minimal. No marketing copy in OG description. -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="{{PROJECT_NAME}}" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Sitemap discovery aid -->
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    {chrome && <Header />}
+    <main id="main">
+      <slot />
+    </main>
+    {chrome && <Footer />}
+  </body>
+</html>

@@ -1,0 +1,82 @@
+---
+/**
+ * Lockup.astro
+ *
+ * Renders one of the brand-guide §2 lockups by referencing the SVG asset
+ * in /public/brand/. SVGs use `currentColor` so theming is one CSS line.
+ *
+ * Default variant is `master`. Three "dialect" lockup variants (dense,
+ * editorial, sparse) map to the three layout dialects in the brand guide
+ * §5 — use them on the per-dialect landing pages so the lockup register
+ * matches the page register.
+ *
+ * The {{PROJECT_NAME}} placeholder in LABEL_MAP is rewritten by setup.sh
+ * during scaffold. The asset filenames in ASSET_MAP must match the SVGs
+ * shipped under /public/brand/.
+ */
+export type LockupVariant =
+  | 'master'
+  | 'dense'
+  | 'editorial'
+  | 'sparse'
+  | 'mark'
+  | 'wordmark';
+
+export interface Props {
+  variant?: LockupVariant;
+  /** Pixel height. Mark scales proportionally. */
+  height?: number;
+  /** Override accessible name. If omitted, derived from variant. */
+  ariaLabel?: string;
+  /** Eager-load? Use true for above-the-fold lockup; false elsewhere. */
+  eager?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'master',
+  height = 32,
+  ariaLabel,
+  eager = false,
+  class: className = '',
+} = Astro.props;
+
+const ASSET_MAP: Record<LockupVariant, string> = {
+  master:    '/brand/lockup-master.svg',
+  dense:     '/brand/lockup-dense.svg',
+  editorial: '/brand/lockup-editorial.svg',
+  sparse:    '/brand/lockup-sparse.svg',
+  mark:      '/brand/mark.svg',
+  wordmark:  '/brand/wordmark.svg',
+};
+
+const LABEL_MAP: Record<LockupVariant, string> = {
+  master:    '{{PROJECT_NAME}}',
+  dense:     '{{PROJECT_NAME}} — dense register',
+  editorial: '{{PROJECT_NAME}} — editorial register',
+  sparse:    '{{PROJECT_NAME}} — sparse register',
+  mark:      '{{PROJECT_NAME}} mark',
+  wordmark:  '{{PROJECT_NAME}} wordmark',
+};
+
+const src = ASSET_MAP[variant];
+const alt = ariaLabel ?? LABEL_MAP[variant];
+---
+
+<img
+  src={src}
+  alt={alt}
+  height={height}
+  class={`lockup lockup--${variant} ${className}`.trim()}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+  fetchpriority={eager ? 'high' : 'auto'}
+/>
+
+<style>
+  .lockup {
+    width: auto;
+    /* Lockups are bitmap-precise SVG; never blur via percentage scaling. */
+    max-height: 100%;
+  }
+</style>

@@ -1,0 +1,85 @@
+---
+/**
+ * editorial.astro — Editorial dialect demo
+ *
+ * Demonstrates the prose-forward register: ~960px reading column, drop-cap
+ * on the first paragraph, .bleed available for figures or tables that want
+ * the wider 1280px track. Use this layout for essays, working papers, and
+ * long-form writing.
+ *
+ * The drop-cap fires automatically on the first <p> inside .prose. Headings
+ * (<h2>, <h3>) get baseline-rhythm spacing from typography.css.
+ */
+import EditorialDialect from '../layouts/EditorialDialect.astro';
+import Lockup from '../components/Lockup.astro';
+---
+
+<EditorialDialect
+  title="Editorial"
+  description="Editorial dialect demo — prose-forward layout with drop-cap and a wider bleed track for figures."
+  ogType="article"
+>
+  <header class="ed-header">
+    <Lockup variant="editorial" height={32} eager />
+  </header>
+
+  <h1>A title for the essay, balanced and unhurried.</h1>
+
+  <p>
+    This is the first paragraph of the essay. The first letter renders as a
+    drop-cap because the dialect targets <code>.prose &gt; p:first-of-type</code>
+    in its scoped style block. Everything after that follows the baseline
+    rhythm defined in <code>typography.css</code>: 16px body, 1.6 line-height,
+    66ch reading measure. Replace this body copy with your own — the layout
+    will hold up to anything from a 600-word post to a 5,000-word paper.
+  </p>
+
+  <p>
+    Subsequent paragraphs do not get a drop-cap. They just sit in the prose
+    column and obey the measure. The point of this register is that the
+    reader is reading <em>linearly</em>, not scanning, so the column width,
+    the line length, and the typeface all conspire to keep them in flow.
+  </p>
+
+  <h2>A second-level heading</h2>
+
+  <p>
+    Headings sit comfortably above the next paragraph without ornament. If
+    you need to surface a figure or a wide table, wrap it in a <code>.bleed</code>
+    container — it will escape the reading column out to the wider editorial
+    track without the reader losing their place.
+  </p>
+
+  <p>
+    Footnotes, citations, and metadata can sit in the quieter <code>.meta</code>
+    register defined in the dialect's scoped style block, which uses the
+    smaller font size and the steel color for subordinate information.
+  </p>
+
+  <h2>Contact</h2>
+
+  <p>
+    Replace this address with whatever channel makes sense for editorial
+    correspondence: <a href="mailto:editorial@{{PROJECT_DOMAIN}}">editorial@{{PROJECT_DOMAIN}}</a>.
+  </p>
+
+  <p class="meta">
+    Last updated: replace this with a real date. Editorial pages benefit
+    from a visible "last touched" line, especially if they are evergreen.
+  </p>
+</EditorialDialect>
+
+<style>
+  .ed-header {
+    margin-bottom: 2rem;
+  }
+  /* Keep code spans monospaced inside the prose column; the global rule
+     leaves them untouched so the dialect can opt in here. */
+  :global(.dialect--editorial .prose code) {
+    font-family: var(--ff-mono);
+    font-size: 0.92em;
+    background: color-mix(in oklch, var(--steel) 8%, transparent);
+    padding: 0.05em 0.3em;
+    border-radius: 2px;
+  }
+</style>

@@ -1,0 +1,161 @@
+---
+/**
+ * dense.astro — Dense dialect demo
+ *
+ * Demonstrates the 12-col data-forward register. Two editable arrays
+ * drive the layout; replace them with your own catalog of items + a
+ * grid of capabilities/attributes/features.
+ *
+ * The .span-N classes (defined inside DenseDialect.astro's scoped style)
+ * give you 3/4/6/8/12-col widths inside the .grid-12 container.
+ */
+import DenseDialect from '../layouts/DenseDialect.astro';
+import Lockup from '../components/Lockup.astro';
+
+const description = 'Dense dialect demo page — replace the copy and the two arrays below with your own content.';
+
+const SHIPPED = [
+  {
+    name: 'feature-one',
+    status: 'Live',
+    summary: 'A short summary line for the most prominent item. Keep it under two sentences. Replace this with your own.',
+    span: 8,
+    accent: true,
+  },
+  {
+    name: 'feature-two',
+    status: 'In progress',
+    summary: 'A secondary item, narrower span. Use the accent flag sparingly — one accent per row reads loudest.',
+    span: 4,
+  },
+];
+
+const CAPABILITIES = [
+  { label: 'Capability A', body: 'Replace this paragraph with a one-sentence description of what you do here. Around 20 words is the target.' },
+  { label: 'Capability B', body: 'Each capability sits in a span-4 cell, three to a row on desktop. Resize the browser to see the mobile collapse.' },
+  { label: 'Capability C', body: 'The pattern is intentionally repetitive — repetition is the point of a dense, scannable register.' },
+  { label: 'Capability D', body: 'Add or remove cells freely; the grid will reflow. Six cells gives you two clean rows.' },
+  { label: 'Capability E', body: 'Avoid mixing spans inside this grid — the visual rhythm carries the dialect.' },
+  { label: 'Capability F', body: 'If you need a different shape, use a different .grid-12 + .span-N composition below.' },
+];
+---
+
+<DenseDialect
+  title="Dense"
+  description={description}
+>
+  <header class="dense-header">
+    <Lockup variant="dense" height={36} eager />
+    <h1 class="t-h1">Dense register — data-forward, 12-col.</h1>
+    <p class="dense-header__lede">
+      A scannable layout for catalogs, dashboards, indexes, and product
+      surfaces. Replace this paragraph with your own lede; it should answer
+      "what is on this page" in one breath.
+    </p>
+  </header>
+
+  <hr class="rule" />
+
+  <section aria-labelledby="shipped-heading">
+    <h2 id="shipped-heading" class="t-h3">Featured</h2>
+    <div class="grid-12 shipped-grid">
+      {SHIPPED.map((item) => (
+        <article class:list={[`span-${item.span}`, 'card', { 'card--accent': item.accent }]}>
+          <p class="t-caption">{item.status}</p>
+          <h3 class="t-h4 card__name">{item.name}</h3>
+          <p class="card__summary">{item.summary}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section aria-labelledby="capabilities-heading">
+    <h2 id="capabilities-heading" class="t-h3">Capabilities</h2>
+    <div class="grid-12 cap-grid">
+      {CAPABILITIES.map((c) => (
+        <div class="span-4 cap">
+          <p class="t-caption">{c.label}</p>
+          <p class="cap__body">{c.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section aria-labelledby="contact-heading" class="contact">
+    <h2 id="contact-heading" class="t-h4">Contact</h2>
+    <p>
+      <a href="mailto:hello@{{PROJECT_DOMAIN}}">hello@{{PROJECT_DOMAIN}}</a>
+      &nbsp;·&nbsp;
+      Replace with whatever quiet next-step is appropriate for this surface.
+    </p>
+  </section>
+</DenseDialect>
+
+<style>
+  .dense-header {
+    margin-bottom: 2.5rem;
+  }
+  .dense-header h1 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    text-wrap: balance;
+    max-width: 22ch;
+  }
+  .dense-header__lede {
+    color: var(--steel);
+    font-size: var(--fs-body-lg);
+    max-width: 64ch;
+  }
+
+  .shipped-grid,
+  .cap-grid {
+    margin-top: 1.5rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+    border: 1px solid color-mix(in oklch, var(--steel) 20%, transparent);
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .card--accent {
+    border-left: 3px solid var(--signal);
+  }
+  .card__name {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-h5);
+    font-weight: 500;
+    margin: 0;
+  }
+  .card__summary {
+    color: var(--steel);
+    line-height: var(--lh-body);
+  }
+
+  .cap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-block: 0.75rem;
+  }
+  .cap__body {
+    color: var(--steel);
+    line-height: var(--lh-body);
+    font-size: var(--fs-small);
+  }
+
+  .contact {
+    margin-top: 1.5rem;
+  }
+  .contact p {
+    color: var(--steel);
+    max-width: 60ch;
+    margin-top: 0.5rem;
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+/**
+ * index.astro — homepage
+ *
+ * Three-panel index demonstrating the three layout dialects. One thesis
+ * line per panel, one quiet contact path. No hero copy beyond a single
+ * positioning sentence, no email capture, no autoplay media.
+ *
+ * Replace the panel copy and routes with whatever your three (or two,
+ * or one) top-level destinations are. The DialectPanel component is
+ * dialect-agnostic — its variant prop just sets the lockup register
+ * and the destination route.
+ */
+import Base from '../layouts/Base.astro';
+import DialectPanel from '../components/DialectPanel.astro';
+import Lockup from '../components/Lockup.astro';
+
+const description = '{{PROJECT_NAME}} — a starter site shipped from the repo-skeletor launcher path. Replace this description with your own positioning sentence.';
+---
+
+<Base
+  title="{{PROJECT_NAME}}"
+  description={description}
+>
+  <section class="hero container container--dense section">
+    <div class="hero__lockup">
+      <Lockup variant="master" height={48} eager />
+    </div>
+    <h1 class="hero__thesis t-h2">
+      One sentence that tells the visitor what you do, balanced and unhurried.
+    </h1>
+    <p class="hero__sub">
+      A second sentence — slightly longer, a little quieter — that names the
+      audience and the proof. Edit this in <code>src/pages/index.astro</code>.
+    </p>
+  </section>
+
+  <section class="panels container container--dense" aria-label="Sections">
+    <div class="panels__grid">
+      <DialectPanel
+        variant="dense"
+        href="/dense"
+        thesis="Dense register — data-forward, 12-col, scannable."
+        proof="Use this for catalogs, dashboards, indexes, and product surfaces where the reader is scanning rather than reading."
+        caption="Layout: 12-col, 1200px max"
+      />
+      <DialectPanel
+        variant="editorial"
+        href="/editorial"
+        thesis="Editorial register — prose-forward with a wider bleed track."
+        proof="Use this for essays, working papers, and long-form writing where the reader is reading linearly. Drop-cap on the first paragraph."
+        caption="Layout: prose, 960px (1280px bleed)"
+      />
+      <DialectPanel
+        variant="sparse"
+        href="/sparse"
+        thesis="Sparse register — single-thesis, generous whitespace."
+        proof="Use this for forward-positioning pages, manifesto statements, and coming-soon stubs. Whitespace is the design."
+        caption="Layout: single-essay, 840px max"
+      />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(4rem, 9vw, 7rem) clamp(2rem, 5vw, 4rem);
+  }
+  .hero__lockup {
+    margin-bottom: 2rem;
+  }
+  .hero__thesis {
+    max-width: 22ch;
+    margin: 0 0 1.25rem;
+  }
+  .hero__sub {
+    max-width: 56ch;
+    color: var(--steel);
+    font-size: var(--fs-body-lg);
+    line-height: var(--lh-body);
+  }
+  .hero__sub code {
+    font-family: var(--ff-mono);
+    font-size: 0.95em;
+    color: var(--ink);
+  }
+
+  .panels {
+    padding-block: 2rem 5rem;
+  }
+  .panels__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .panels__grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+</style>

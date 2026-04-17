@@ -1,0 +1,85 @@
+/*
+ * tokens.css — GENERATED from brand guide.
+ * DO NOT EDIT BY HAND. Run `npm run prebuild` after editing the brand guide.
+ *
+ * Source: ../docs/brand_guide.md
+ * Generated: 2026-04-16T21:44:36.490Z
+ * Tokens extracted: 25 (core: 4, neutral: 12, signal: 7, semantic: 2)
+ */
+
+:root {
+  /* Core palette */
+  --ink: #14181A;  /* primary text, dark surfaces, mark on light */
+  --paper: #F1EEE8;  /* primary light surface, warm-neutral */
+  --steel: #4A5159;  /* secondary text, borders, muted surfaces */
+  --signal: #4A6B4A;  /* single accent — links, CTAs, emphasis */
+
+  /* Neutral tonal scale */
+  --n-950: #08090A;  /* page background (dark mode) */
+  --n-900: #14181A;  /* (= ink) */
+  --n-800: #1E2326;
+  --n-700: #2D3338;
+  --n-600: #4A5159;  /* (= steel) */
+  --n-500: #6E7780;
+  --n-400: #939BA3;
+  --n-300: #B6BDC4;
+  --n-200: #D2D8DD;
+  --n-100: #E0E2E0;
+  --n-50: #F1EEE8;  /* (= paper) */
+  --n-0: #FFFFFF;  /* reserved for overlays on dark surfaces only */
+
+  /* Signal tonal scale */
+  --signal-950: #1A2A1A;
+  --signal-900: #243824;
+  --signal-700: #4A6B4A;  /* (= signal, default) */
+  --signal-500: #6B8A6B;
+  --signal-300: #9DB59D;
+  --signal-100: #D5E0D5;
+  --signal-50: #E8EFE8;
+
+  /* Semantic states */
+  --ok: #2A6B5E;  /* success, valid, shipped */
+  --warn: #8B3A3A;  /* error, invalid, at-risk */
+
+  /* Type scale (1.25 modular ratio) */
+  --fs-display:    3.815rem;
+  --fs-h1:         3.052rem;
+  --fs-h2:         2.441rem;
+  --fs-h3:         1.953rem;
+  --fs-h4:         1.563rem;
+  --fs-h5:         1.250rem;
+  --fs-body-lg:    1.125rem;
+  --fs-body:       1.000rem;
+  --fs-small:      0.875rem;
+  --fs-mono:       0.938rem;
+  --fs-caption:    0.750rem;
+
+  /* Type families (resolved by typography.css @font-face declarations) */
+  --ff-serif:      'Source Serif 4 Variable', 'Source Serif 4', Charter, Georgia, 'Times New Roman', serif;
+  --ff-sans:       'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --ff-mono:       'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Layout dialect widths (one per register) */
+  --max-dense:           1200px;
+  --max-editorial:       960px;
+  --max-editorial-bleed: 1280px;
+  --max-sparse:          840px;
+
+  /* Reading measure */
+  --measure-prose:  66ch;
+
+  /* Line heights */
+  --lh-display:    1.1;
+  --lh-heading:    1.2;
+  --lh-body:       1.6;
+  --lh-ui:         1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode is a user preference, not a brand choice. Swap surface
+       and ink; everything else inherits and inverts via tonal scale. */
+    --paper: var(--n-950);
+    --ink:   var(--n-50);
+  }
+}

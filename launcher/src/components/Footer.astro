@@ -1,0 +1,93 @@
+---
+/**
+ * Footer.astro
+ *
+ * Quiet sitewide footer. Three columns: nav echo, contact, legal.
+ *
+ * No newsletter signup. No contact form. The launcher path follows the
+ * "shipped products are the marketing" doctrine inherited from the parent
+ * project — replace this footer with the standard pattern your org uses
+ * if your GTM is different.
+ */
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer" role="contentinfo">
+  <div class="site-footer__inner container container--dense">
+    <div class="site-footer__col">
+      <p class="t-caption">{{PROJECT_NAME}}</p>
+      <ul role="list" class="site-footer__links">
+        <li><a href="/dense">Dense</a></li>
+        <li><a href="/editorial">Editorial</a></li>
+        <li><a href="/sparse">Sparse</a></li>
+      </ul>
+    </div>
+
+    <div class="site-footer__col">
+      <p class="t-caption">Contact</p>
+      <ul role="list" class="site-footer__links">
+        <li><a href="mailto:hello@{{PROJECT_DOMAIN}}">hello@{{PROJECT_DOMAIN}}</a></li>
+        <li><a href="https://github.com/" rel="me noopener">GitHub</a></li>
+      </ul>
+    </div>
+
+    <div class="site-footer__col site-footer__col--legal">
+      <p class="t-caption">Legal</p>
+      <p class="site-footer__legal">
+        {{PROJECT_NAME}}<br />
+        © {year}. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid color-mix(in oklch, var(--steel) 20%, transparent);
+    background: color-mix(in oklch, var(--paper) 92%, var(--ink));
+    margin-top: 6rem;
+    padding-block: 3rem 2.5rem;
+  }
+
+  .site-footer__inner {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  .site-footer__col .t-caption {
+    margin-bottom: 0.75rem;
+    color: var(--steel);
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .site-footer__links a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: var(--fs-small);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  .site-footer__links a:hover {
+    border-bottom-color: var(--ink);
+  }
+
+  .site-footer__legal {
+    font-size: var(--fs-small);
+    color: var(--steel);
+    line-height: var(--lh-ui);
+  }
+
+  @media (max-width: 720px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

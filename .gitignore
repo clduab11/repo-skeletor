@@ -1,0 +1,28 @@
+# ───────────────────────────────────────────────────────────────────
+# repo-skeletor — root .gitignore
+#
+# Anything below here is intentionally NOT shipped to consumers when
+# they "Use this template" on GitHub. Internal-only artifacts live
+# alongside the public ones in this workspace tree but stay local.
+# ───────────────────────────────────────────────────────────────────
+
+# Internal one-time runbook for the maintainer's own repo migration.
+# Contains absolute Windows paths and one-time gh commands; serves
+# zero purpose to downstream consumers.
+REPO_RELAUNCH_RUNBOOK.md
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Build output (in case anyone runs the launcher from the root)
+dist/
+node_modules/

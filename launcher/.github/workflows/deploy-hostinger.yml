@@ -1,0 +1,78 @@
+name: deploy-hostinger
+
+# Production deploy. Triggered only on push to main, after CI passes.
+# Vercel preview deploys are handled by Vercel's native Git integration —
+# no workflow needed. This workflow handles the SFTP-to-Hostinger leg.
+#
+# Required GitHub Action secrets:
+#   HOSTINGER_HOST           — sftp host (e.g., ftp.{{PROJECT_DOMAIN}})
+#   HOSTINGER_USERNAME       — sftp user
+#   HOSTINGER_PASSWORD       — sftp password (or HOSTINGER_KEY for key auth)
+#   HOSTINGER_TARGET_DIR     — absolute path on host (e.g., /home/u123/public_html)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false  # never cancel a prod deploy in flight
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: build + sftp upload
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://{{PROJECT_DOMAIN}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build (runs prebuild → extract-tokens.mjs)
+        run: npm run build
+
+      - name: Verify — grep gate (production blocker)
+        # Belt-and-suspenders: CI ran this on the same commit, but a fresh
+        # check here catches dependency-introduced strings or local-build
+        # divergence before anything hits the public origin.
+        run: npm run verify
+
+      - name: Deploy to Hostinger via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          local_path: './dist/*'
+          remote_path: ${{ secrets.HOSTINGER_TARGET_DIR }}
+          delete_remote_files: true  # mirror dist/ exactly — no orphan files
+          sftp_only: true
+
+      - name: Smoke test (curl public origin)
+        # Four-route check: /, /dense, /editorial, /sparse. Any non-200
+        # fails the deploy job (workflow turns red, Cloudflare may still be
+        # caching the old version — manual purge is in the runbook).
+        run: |
+          set -euo pipefail
+          for path in / /dense /editorial /sparse; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' "https://{{PROJECT_DOMAIN}}${path}" || echo "000")
+            echo "GET ${path} → ${code}"
+            if [[ "$code" != "200" ]]; then
+              echo "::error::Smoke test failed on ${path} (got ${code})"
+              exit 1
+            fi
+          done

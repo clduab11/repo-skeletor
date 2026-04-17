@@ -1,0 +1,31 @@
+{
+  "name": "{{PROJECT_NAME}}-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Astro 5 SSG launcher path from clduab11/repo-skeletor \u2014 generic starter with brand-token pipeline, dialect-based layout system, and pre-deploy grep gate.",
+  "scripts": {
+    "prebuild": "node scripts/extract-tokens.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "verify": "node scripts/verify-no-deprecated.mjs dist",
+    "ci": "npm run build && npm run verify",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "@astrojs/sitemap": "^3.2.0",
+    "@fontsource-variable/inter": "^5.1.0",
+    "@fontsource-variable/source-serif-4": "^5.1.0",
+    "@fontsource/jetbrains-mono": "^5.1.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@astrojs/check": "^0.9.4"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

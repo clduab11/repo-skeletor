@@ -1,0 +1,28 @@
+# Enforce LF for shell scripts so bash on macOS/Linux doesn't choke on CRLF.
+# Without this, Windows clones get CRLF and `./setup.sh` fails with `bash: \r: command not found`.
+*.sh             text eol=lf
+*.bash           text eol=lf
+
+# Preserve LF for build artifacts that downstream tooling may inspect line-by-line.
+*.yml            text eol=lf
+*.yaml           text eol=lf
+*.json           text eol=lf
+*.mjs            text eol=lf
+*.ts             text eol=lf
+*.astro          text eol=lf
+*.css            text eol=lf
+*.md             text eol=lf
+*.svg            text eol=lf
+.gitignore       text eol=lf
+.nvmrc           text eol=lf
+LICENSE          text eol=lf
+
+# Binary blobs — never let git try to "fix" them.
+*.png            binary
+*.jpg            binary
+*.jpeg           binary
+*.webp           binary
+*.ico            binary
+*.woff           binary
+*.woff2          binary
+*.pdf            binary

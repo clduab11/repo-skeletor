@@ -1,0 +1,102 @@
+/*
+ * typography.css — type system per brand guide §3
+ *
+ * Font loading: @fontsource-variable packages handle @font-face declarations,
+ * subsetting, and woff2 hosting. Imported from JS (Astro layout) so Vite
+ * fingerprints + serves them with cache-busting hashes. We only need to
+ * declare the *application* of those families here.
+ *
+ * Allowed weights per project anti-patterns: 400, 500, 600, 700. No 100/200/
+ * 300/800/900. We enforce this implicitly by never referencing those values.
+ */
+
+/* Base body type */
+body {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: 400;
+  font-feature-settings: 'kern', 'liga', 'calt', 'ss01';
+}
+
+/* Display + headings — Source Serif 4. Heading scale per §3 modular ratio. */
+.t-display,
+.t-h1,
+.t-h2,
+.t-h3,
+.t-h4,
+.t-h5 {
+  font-family: var(--ff-serif);
+  font-weight: 600;
+  line-height: var(--lh-heading);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.t-display {
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.t-h1 { font-size: var(--fs-h1); }
+.t-h2 { font-size: var(--fs-h2); }
+.t-h3 { font-size: var(--fs-h3); }
+.t-h4 { font-size: var(--fs-h4); }
+.t-h5 { font-size: var(--fs-h5); font-weight: 600; }
+
+/* Body sizes — Inter */
+.t-body-lg { font-size: var(--fs-body-lg); line-height: var(--lh-body); }
+.t-body    { font-size: var(--fs-body);    line-height: var(--lh-body); }
+.t-small   { font-size: var(--fs-small);   line-height: var(--lh-ui); }
+.t-caption {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--steel);
+}
+
+/* Mono — JetBrains Mono. Used for code, deal terms, ticker-style data. */
+.t-mono,
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-mono);
+  font-weight: 400;
+  font-feature-settings: 'calt' 0;
+}
+
+/* Reading measure for prose blocks. Brand guide §3.215. */
+.prose {
+  max-width: var(--measure-prose);
+  text-wrap: pretty;
+}
+.prose p + p {
+  margin-top: 1.25em;
+}
+.prose h2,
+.prose h3 {
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+/* Native HTML element defaults — keep H1-H4 readable even if classes are
+   omitted (degrade-gracefully clause). */
+h1 { font-family: var(--ff-serif); font-size: var(--fs-h1); line-height: var(--lh-heading); font-weight: 700; letter-spacing: -0.015em; color: var(--ink); }
+h2 { font-family: var(--ff-serif); font-size: var(--fs-h2); line-height: var(--lh-heading); font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+h3 { font-family: var(--ff-serif); font-size: var(--fs-h3); line-height: var(--lh-heading); font-weight: 600; color: var(--ink); }
+h4 { font-family: var(--ff-serif); font-size: var(--fs-h4); line-height: var(--lh-heading); font-weight: 600; color: var(--ink); }
+
+p { font-size: var(--fs-body); line-height: var(--lh-body); }
+
+/* Selection — uses signal hue at low alpha so it reads as a state, not a brand moment. */
+::selection {
+  background: color-mix(in oklch, var(--signal) 25%, transparent);
+  color: var(--ink);
+}

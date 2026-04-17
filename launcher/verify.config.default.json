@@ -1,0 +1,14 @@
+{
+  "_comment": "Default deny-list shipped with the repo-skeletor launcher. Copy to verify.config.json and edit for your project. Each rule: { pattern (RegExp source), flags, label, severity: 'fatal'|'warn' }. Fatal hits fail the build; warn hits print but pass. Add hard-deprecated brand strings (predecessor company names, old domains, retired wordmarks) as 'fatal'. Add anti-pattern marketing terms as 'warn'.",
+  "forbidden": [
+    { "pattern": "\\brevolutioniz",     "flags": "i", "label": "banned term: revolutioniz*",  "severity": "warn" },
+    { "pattern": "\\bcutting-edge\\b",  "flags": "i", "label": "banned term: cutting-edge",   "severity": "warn" },
+    { "pattern": "\\bseamless\\b",      "flags": "i", "label": "banned term: seamless",       "severity": "warn" },
+    { "pattern": "\\bunlock\\b",        "flags": "i", "label": "banned term: unlock",         "severity": "warn" },
+    { "pattern": "\\bleverage\\b",      "flags": "i", "label": "banned term: leverage",       "severity": "warn" },
+    { "pattern": "\\bempower\\b",       "flags": "i", "label": "banned term: empower",        "severity": "warn" },
+    { "pattern": "AI-powered",          "flags": "i", "label": "banned term: AI-powered",     "severity": "warn" },
+    { "pattern": "game-changer",        "flags": "i", "label": "banned term: game-changer",   "severity": "warn" }
+  ],
+  "scannableExtensions": [".html", ".css", ".js", ".txt", ".xml", ".svg", ".json", ".md"]
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64" role="img" aria-label="Skeletor">
+  <title>Skeletor</title>
+  <!-- Master lockup: mark + wordmark, vertically centered. -->
+  <g>
+    <rect x="2" y="2" width="60" height="60" fill="none" stroke="currentColor" stroke-width="2.5"/>
+    <text
+      x="32"
+      y="46"
+      text-anchor="middle"
+      font-family="'Source Serif 4', Charter, Georgia, 'Times New Roman', serif"
+      font-size="44"
+      font-weight="700"
+      fill="currentColor"
+      letter-spacing="-0.02em"
+    >S</text>
+  </g>
+  <text
+    x="80"
+    y="44"
+    font-family="'Source Serif 4', Charter, Georgia, 'Times New Roman', serif"
+    font-size="38"
+    font-weight="700"
+    fill="currentColor"
+    letter-spacing="-0.01em"
+  >Skeletor</text>
+</svg>

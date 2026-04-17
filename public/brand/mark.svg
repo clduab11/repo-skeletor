@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Skeletor mark">
+  <title>Skeletor mark</title>
+  <!--
+    The mark: a serif S inside a square frame.
+    Square = the scaffold (structure). Letter = the brand (specific).
+    To rebrand: change the <text> below to your initial, recolor via currentColor on the parent.
+  -->
+  <rect x="2" y="2" width="60" height="60" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  <text
+    x="32"
+    y="46"
+    text-anchor="middle"
+    font-family="'Source Serif 4', Charter, Georgia, 'Times New Roman', serif"
+    font-size="44"
+    font-weight="700"
+    fill="currentColor"
+    letter-spacing="-0.02em"
+  >S</text>
+</svg>

@@ -1,0 +1,397 @@
+# Continue.dev MCP Server Configuration for {{PROJECT_NAME}}
+# Reference: https://docs.continue.dev/features/mcp
+# Model Context Protocol server definitions
+
+name: "{{PROJECT_NAME}} MCP Stack"
+version: "1.0.0"
+schema: v1
+
+# ============================================
+# MCP SERVERS
+# ============================================
+mcpServers:
+  # --------------------------------------------
+  # FILESYSTEM SERVER
+  # Local file operations with safety guardrails
+  # Allows AI to read/write files in allowed directories
+  # --------------------------------------------
+  - name: "filesystem"
+    command: "npx"
+    args:
+      - "-y"
+      - "@anthropic/mcp-server-filesystem"
+      - "--allowed-directories"
+      - "${workspaceFolder}"
+      - "${workspaceFolder}/src"
+      - "${workspaceFolder}/tests"
+      - "${workspaceFolder}/docs"
+      - "--denied-patterns"
+      - "**/.env*"
+      - "**/*.key"
+      - "**/*.pem"
+      - "**/secrets/**"
+      - "**/node_modules/**"
+      - "**/.git/**"
+    env:
+      NODE_ENV: "production"
+    connectionTimeout: 10000
+    description: "Safe file system operations for AI"
+
+  # --------------------------------------------
+  # GITHUB SERVER
+  # Repository operations, PRs, issues, workflows
+  # Enables AI to interact with GitHub
+  # --------------------------------------------
+  - name: "github"
+    command: "npx"
+    args:
+      - "-y"
+      - "@anthropic/mcp-server-github"
+    env:
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      GITHUB_OWNER: "{{GITHUB_OWNER}}"
+      GITHUB_REPO: "{{GITHUB_REPOSITORY}}"
+    connectionTimeout: 15000
+    description: "GitHub integration for repo operations"
+
+  # --------------------------------------------
+  # LINEAR SERVER
+  # Issue tracking and project management
+  # Allows AI to create/update Linear issues
+  # --------------------------------------------
+  - name: "linear"
+    command: "npx"
+    args:
+      - "-y"
+      - "@anthropic/mcp-server-linear"
+    env:
+      LINEAR_API_KEY: "${LINEAR_API_KEY}"
+      LINEAR_TEAM_ID: "{{LINEAR_TEAM_ID}}"
+      LINEAR_TEAM_KEY: "PAR"
+    connectionTimeout: 15000
+    description: "Linear issue tracking integration"
+
+  # --------------------------------------------
+  # NOTION SERVER
+  # Documentation and specification management
+  # Enables AI to read/write Notion pages
+  # --------------------------------------------
+  - name: "notion"
+    command: "npx"
+    args:
+      - "-y"
+      - "@anthropic/mcp-server-notion"
+    env:
+      NOTION_API_KEY: "${NOTION_API_KEY}"
+      NOTION_SPEC_DATABASE_ID: "{{NOTION_SPEC_DATABASE_ID}}"
+      NOTION_WIKI_PAGE_ID: "{{NOTION_WIKI_PAGE_ID}}"
+    connectionTimeout: 15000
+    description: "Notion documentation integration"
+
+  # --------------------------------------------
+  # WEB SEARCH SERVER (Brave Search)
+  # Real-time web search for documentation and answers
+  # Helps AI find up-to-date information
+  # --------------------------------------------
+  - name: "web-search"
+    command: "npx"
+    args:
+      - "-y"
+      - "@anthropic/mcp-server-brave-search"
+    env:
+      BRAVE_API_KEY: "${BRAVE_API_KEY}"
+    connectionTimeout: 20000
+    description: "Web search for documentation and research"
+
+  # --------------------------------------------
+  # MEMORY SERVER (mem0)
+  # Persistent context and learning across sessions
+  # Enables AI to remember project-specific context
+  # --------------------------------------------
+  - name: "memory"
+    command: "npx"
+    args:
+      - "-y"
+      - "@mem0/mcp-server"
+    env:
+      MEM0_API_KEY: "${MEM0_API_KEY}"
+      MEM0_USER_ID: "${USER_ID:-clduab11}"
+      MEM0_PROJECT_ID: "{{PROJECT_NAME}}"
+    connectionTimeout: 10000
+    description: "Persistent memory across AI sessions"
+
+  # --------------------------------------------
+  # CONTEXT7 SERVER
+  # Library documentation and API reference lookup
+  # Provides up-to-date docs for popular libraries
+  # --------------------------------------------
+  - name: "context7"
+    command: "npx"
+    args:
+      - "-y"
+      - "@upstash/context7-mcp"
+    env:
+      CONTEXT7_API_KEY: "${CONTEXT7_API_KEY}"
+    connectionTimeout: 15000
+    description: "Library documentation lookup"
+
+  # --------------------------------------------
+  # GIT SERVER
+  # Advanced git operations beyond GitHub API
+  # Enables complex git workflows
+  # --------------------------------------------
+  - name: "git"
+    command: "npx"
+    args:
+      - "-y"
+      - "@anthropic/mcp-server-git"
+      - "--repository"
+      - "${workspaceFolder}"
+    env:
+      GIT_AUTHOR_NAME: "${GIT_AUTHOR_NAME:-AI Assistant}"
+      GIT_AUTHOR_EMAIL: "${GIT_AUTHOR_EMAIL:-ai@{{PROJECT_DOMAIN}}}"
+    connectionTimeout: 10000
+    description: "Advanced git operations"
+
+  # --------------------------------------------
+  # SEQUENTIAL THINKING SERVER
+  # Breaks down complex problems step-by-step
+  # Improves AI reasoning for difficult tasks
+  # --------------------------------------------
+  - name: "sequential-thinking"
+    command: "npx"
+    args:
+      - "-y"
+      - "@anthropic/mcp-server-sequential-thinking"
+    connectionTimeout: 10000
+    description: "Step-by-step problem solving"
+
+  # ============================================
+  # OPTIONAL SERVERS (Uncomment as needed)
+  # ============================================
+
+  # --------------------------------------------
+  # POSTGRES SERVER
+  # Database operations for PostgreSQL
+  # Enables AI to query and modify database
+  # --------------------------------------------
+  # - name: "postgres"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@anthropic/mcp-server-postgres"
+  #     - "--connection-string"
+  #     - "${DATABASE_URL}"
+  #   env:
+  #     PGPASSWORD: "${DATABASE_PASSWORD}"
+  #   connectionTimeout: 10000
+  #   description: "PostgreSQL database operations"
+
+  # --------------------------------------------
+  # SQLITE SERVER
+  # SQLite database operations
+  # Useful for local development databases
+  # --------------------------------------------
+  # - name: "sqlite"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@anthropic/mcp-server-sqlite"
+  #     - "--db-path"
+  #     - "${workspaceFolder}/dev.db"
+  #   connectionTimeout: 5000
+  #   description: "SQLite database operations"
+
+  # --------------------------------------------
+  # SENTRY SERVER
+  # Error monitoring and tracking
+  # Allows AI to investigate production errors
+  # --------------------------------------------
+  # - name: "sentry"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@sentry/mcp-server"
+  #   env:
+  #     SENTRY_AUTH_TOKEN: "${SENTRY_AUTH_TOKEN}"
+  #     SENTRY_ORG: "{{GITHUB_OWNER}}"
+  #     SENTRY_PROJECT: "{{PROJECT_NAME}}"
+  #   connectionTimeout: 15000
+  #   description: "Sentry error monitoring"
+
+  # --------------------------------------------
+  # VERCEL SERVER
+  # Deployment and preview management
+  # Enables AI to deploy and manage previews
+  # --------------------------------------------
+  # - name: "vercel"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@vercel/mcp"
+  #   env:
+  #     VERCEL_TOKEN: "${VERCEL_TOKEN}"
+  #     VERCEL_PROJECT_ID: "{{VERCEL_PROJECT_ID}}"
+  #   connectionTimeout: 20000
+  #   description: "Vercel deployment operations"
+
+  # --------------------------------------------
+  # SLACK SERVER
+  # Team communication integration
+  # Allows AI to send notifications
+  # --------------------------------------------
+  # - name: "slack"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@anthropic/mcp-server-slack"
+  #   env:
+  #     SLACK_BOT_TOKEN: "${SLACK_BOT_TOKEN}"
+  #     SLACK_TEAM_ID: "${SLACK_TEAM_ID}"
+  #   connectionTimeout: 10000
+  #   description: "Slack team notifications"
+
+  # --------------------------------------------
+  # DOCKER SERVER
+  # Container management operations
+  # Enables AI to manage Docker containers
+  # --------------------------------------------
+  # - name: "docker"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@anthropic/mcp-server-docker"
+  #   env:
+  #     DOCKER_HOST: "${DOCKER_HOST:-unix:///var/run/docker.sock}"
+  #   connectionTimeout: 10000
+  #   description: "Docker container management"
+
+  # --------------------------------------------
+  # AWS SERVER
+  # AWS service operations
+  # Enables AI to interact with AWS resources
+  # --------------------------------------------
+  # - name: "aws"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@anthropic/mcp-server-aws"
+  #   env:
+  #     AWS_REGION: "${AWS_REGION:-us-east-1}"
+  #     AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+  #     AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+  #   connectionTimeout: 15000
+  #   description: "AWS resource management"
+
+  # --------------------------------------------
+  # PUPPETEER SERVER
+  # Browser automation for testing
+  # Enables AI to perform E2E testing
+  # --------------------------------------------
+  # - name: "puppeteer"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@anthropic/mcp-server-puppeteer"
+  #   env:
+  #     PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium-browser"
+  #   connectionTimeout: 20000
+  #   description: "Browser automation for testing"
+
+  # --------------------------------------------
+  # STRIPE SERVER
+  # Payment processing integration
+  # Enables AI to manage Stripe operations
+  # --------------------------------------------
+  # - name: "stripe"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@stripe/mcp-server"
+  #   env:
+  #     STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
+  #     STRIPE_WEBHOOK_SECRET: "${STRIPE_WEBHOOK_SECRET}"
+  #   connectionTimeout: 15000
+  #   description: "Stripe payment processing"
+
+  # --------------------------------------------
+  # CONTENTFUL SERVER
+  # CMS content management
+  # Enables AI to manage CMS content
+  # --------------------------------------------
+  # - name: "contentful"
+  #   command: "npx"
+  #   args:
+  #     - "-y"
+  #     - "@contentful/mcp-server"
+  #   env:
+  #     CONTENTFUL_SPACE_ID: "${CONTENTFUL_SPACE_ID}"
+  #     CONTENTFUL_ACCESS_TOKEN: "${CONTENTFUL_ACCESS_TOKEN}"
+  #   connectionTimeout: 15000
+  #   description: "Contentful CMS management"
+
+# ============================================
+# STREAMABLE-HTTP SERVERS (Remote MCP)
+# For self-hosted or cloud MCP servers
+# ============================================
+# streamableHttpServers:
+#   - name: "custom-research"
+#     url: "https://mcp.{{PROJECT_DOMAIN}}/research"
+#     requestOptions:
+#       headers:
+#         Authorization: "Bearer ${CUSTOM_MCP_TOKEN}"
+#       timeout: 30000
+#     description: "Custom research MCP server"
+#
+#   - name: "custom-analytics"
+#     url: "https://mcp.{{PROJECT_DOMAIN}}/analytics"
+#     requestOptions:
+#       headers:
+#         Authorization: "Bearer ${CUSTOM_MCP_TOKEN}"
+#       timeout: 30000
+#     description: "Custom analytics MCP server"
+
+# ============================================
+# SSE SERVERS (Legacy)
+# For older Server-Sent Events MCP implementations
+# ============================================
+# sseServers:
+#   - name: "legacy-server"
+#     url: "https://legacy-mcp.example.com/events"
+#     connectionTimeout: 20000
+#     description: "Legacy SSE-based MCP server"
+
+# ============================================
+# CONFIGURATION NOTES
+# ============================================
+# 
+# Environment Variables:
+# - All ${VAR_NAME} placeholders are replaced at runtime
+# - Required vars: GITHUB_TOKEN, LINEAR_API_KEY, NOTION_API_KEY
+# - Optional vars: BRAVE_API_KEY, MEM0_API_KEY, CONTEXT7_API_KEY
+# 
+# Security:
+# - Never commit actual tokens/keys to git
+# - Use .env file for local development
+# - Use GitHub Secrets for CI/CD
+# - Filesystem server denies access to sensitive patterns
+# 
+# Performance:
+# - Connection timeouts prevent hanging AI sessions
+# - Use shorter timeouts (5-10s) for local servers
+# - Use longer timeouts (15-20s) for external APIs
+# 
+# Debugging:
+# - Set NODE_ENV=development for verbose logging
+# - Check MCP server logs in ~/.continue/logs/
+# - Test individual servers with: npx @anthropic/mcp-server-<name> --help
+# 
+# Custom Servers:
+# - Create custom MCP servers for project-specific needs
+# - Follow the MCP protocol specification
+# - Deploy as npm packages or standalone services
+# 
+# References:
+# - MCP Specification: https://modelcontextprotocol.io
+# - Continue.dev MCP Guide: https://docs.continue.dev/features/mcp
+# - Available MCP Servers: https://github.com/anthropics/mcp-servers

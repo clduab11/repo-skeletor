@@ -1,0 +1,58 @@
+---
+/**
+ * SparseDialect.astro
+ *
+ * Sparse layout dialect — single-essay or single-artifact, ~840px max,
+ * generous vertical rhythm. Use this for forward-positioning pages,
+ * coming-soon stubs, manifesto-style statements, or anywhere whitespace
+ * is the design and ornament would dilute the message.
+ *
+ * Two opt-in display utilities ship with the dialect:
+ *   .display — large serif headline, balanced wrap, narrow measure.
+ *   .lede    — single short paragraph in the same serif register.
+ */
+import Base from './Base.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+}
+const { title, description, canonical } = Astro.props;
+---
+
+<Base title={title} description={description} canonical={canonical}>
+  <div class="dialect dialect--sparse container container--sparse">
+    <slot />
+  </div>
+</Base>
+
+<style is:global>
+  .dialect--sparse {
+    padding-block: clamp(5rem, 12vw, 9rem);
+  }
+
+  .dialect--sparse > * + * {
+    margin-top: 2.5rem;
+  }
+
+  /* Single-essay reading column. Wider tracking on display type because
+     the page is meant to feel deliberate, not packed. */
+  .dialect--sparse .display {
+    font-family: var(--ff-serif);
+    font-size: var(--fs-display);
+    line-height: var(--lh-display);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    text-wrap: balance;
+    max-width: 18ch;
+  }
+
+  .dialect--sparse .lede {
+    font-family: var(--ff-serif);
+    font-size: var(--fs-h4);
+    line-height: 1.45;
+    color: var(--steel);
+    max-width: 48ch;
+  }
+</style>

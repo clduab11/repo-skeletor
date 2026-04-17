@@ -1,0 +1,104 @@
+---
+/**
+ * DialectPanel.astro
+ *
+ * Used on the homepage 3-panel index per brand guide §9: each panel answers
+ * "what is this" and "what do I do next" in <10s. The variant prop binds
+ * the panel's lockup variant to the destination page's layout dialect, so
+ * the visitor lands in the register the panel previewed.
+ *
+ * Replace the three demo panels in src/pages/index.astro with your own —
+ * this component is generic and does not encode any project-specific copy.
+ */
+import type { LockupVariant } from './Lockup.astro';
+import Lockup from './Lockup.astro';
+
+export interface Props {
+  /** Which dialect this panel routes to. Must match a route + a Lockup variant. */
+  variant: Extract<LockupVariant, 'dense' | 'editorial' | 'sparse'>;
+  href: string;
+  /** One-sentence thesis. Answers "what is this." Keep under 110 chars. */
+  thesis: string;
+  /** What the visitor will find on the destination page. Under 180 chars. */
+  proof: string;
+  /** Optional shipped-work or marker line shown as a quiet caption. */
+  caption?: string;
+}
+
+const { variant, href, thesis, proof, caption } = Astro.props;
+---
+
+<a class={`panel panel--${variant}`} href={href}>
+  <div class="panel__header">
+    <Lockup variant={variant} height={26} />
+  </div>
+
+  <p class="panel__thesis t-h4">{thesis}</p>
+  <p class="panel__proof">{proof}</p>
+
+  {caption && <p class="panel__caption t-caption">{caption}</p>}
+
+  <span class="panel__cta" aria-hidden="true">
+    Open
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter" />
+    </svg>
+  </span>
+</a>
+
+<style>
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.75rem;
+    background: var(--paper);
+    border: 1px solid color-mix(in oklch, var(--steel) 20%, transparent);
+    text-decoration: none;
+    color: var(--ink);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .panel:hover {
+    border-color: var(--ink);
+    text-decoration: none;
+  }
+
+  .panel__header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .panel__thesis {
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .panel__proof {
+    color: var(--steel);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+  }
+
+  .panel__caption {
+    margin-top: auto;
+    color: var(--steel);
+  }
+
+  .panel__cta {
+    margin-top: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--signal);
+  }
+  .panel__cta svg {
+    transition: transform 0.15s ease;
+  }
+  .panel:hover .panel__cta svg {
+    transform: translateX(3px);
+  }
+</style>

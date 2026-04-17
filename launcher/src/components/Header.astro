@@ -1,0 +1,106 @@
+---
+/**
+ * Header.astro
+ *
+ * Sitewide header: master lockup left, top-level nav right. Per the IA
+ * principle in the project instructions, navigation max depth 2 — these
+ * are flat top-level routes, no dropdowns, no mega-menus.
+ *
+ * Edit NAV to match your top-level routes. Three demo routes ship with
+ * the launcher (one per dialect register) — replace, rename, or delete.
+ */
+import Lockup from './Lockup.astro';
+
+const NAV = [
+  { href: '/dense',     label: 'Dense' },
+  { href: '/editorial', label: 'Editorial' },
+  { href: '/sparse',    label: 'Sparse' },
+];
+
+const pathname = new URL(Astro.request.url).pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="site-header" role="banner">
+  <div class="site-header__inner container container--dense">
+    <a href="/" class="site-header__home" aria-label="{{PROJECT_NAME}} — home">
+      <Lockup variant="master" height={28} eager />
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul role="list" class="site-nav__list">
+        {NAV.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class:list={['site-nav__link', { 'is-current': pathname === href }]}
+              aria-current={pathname === href ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid color-mix(in oklch, var(--steel) 20%, transparent);
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-block: 1rem;
+  }
+
+  .site-header__home {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  .site-header__home:hover { text-decoration: none; }
+
+  .site-nav__list {
+    display: flex;
+    gap: clamp(1rem, 3vw, 2rem);
+    align-items: center;
+  }
+
+  .site-nav__link {
+    font-family: var(--ff-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    padding-block: 0.25rem;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  .site-nav__link:hover {
+    border-bottom-color: var(--ink);
+    text-decoration: none;
+  }
+  .site-nav__link.is-current {
+    border-bottom-color: var(--signal);
+  }
+
+  /* Mobile: stack the nav under the lockup. No hamburger — three items
+     fit comfortably on a phone in a single row. */
+  @media (max-width: 480px) {
+    .site-header__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .site-nav__list { gap: 1.25rem; }
+  }
+</style>

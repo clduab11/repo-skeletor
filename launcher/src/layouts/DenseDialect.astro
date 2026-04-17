@@ -1,0 +1,53 @@
+---
+/**
+ * DenseDialect.astro
+ *
+ * Dense layout dialect — data-forward, 12-col grid, 1200px max width.
+ * Use this for product surfaces, catalog/index pages, dashboards, or any
+ * page where the content benefits from a tight columnar rhythm and the
+ * reader is scanning rather than reading linearly.
+ *
+ * The dialect is enforced via the container width + grid utility class;
+ * page authors slot content directly without re-declaring the constraint.
+ */
+import Base from './Base.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+}
+const { title, description, canonical } = Astro.props;
+---
+
+<Base title={title} description={description} canonical={canonical}>
+  <div class="dialect dialect--dense container container--dense">
+    <slot />
+  </div>
+</Base>
+
+<style is:global>
+  .dialect--dense {
+    padding-block: clamp(3rem, 8vw, 5rem);
+  }
+
+  /* 12-col grid for cards, tables, technical metadata. */
+  .dialect--dense .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  .dialect--dense .span-3  { grid-column: span 3; }
+  .dialect--dense .span-4  { grid-column: span 4; }
+  .dialect--dense .span-6  { grid-column: span 6; }
+  .dialect--dense .span-8  { grid-column: span 8; }
+  .dialect--dense .span-12 { grid-column: span 12; }
+
+  @media (max-width: 768px) {
+    .dialect--dense .grid-12 { gap: 1rem; }
+    .dialect--dense .span-3,
+    .dialect--dense .span-4 { grid-column: span 6; }
+    .dialect--dense .span-6,
+    .dialect--dense .span-8 { grid-column: span 12; }
+  }
+</style>

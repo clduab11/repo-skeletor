@@ -1,0 +1,189 @@
+name: Template Protection
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  check-template-integrity:
+    name: Verify Template Integrity
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check for project-specific content
+        id: check_content
+        run: |
+          echo "Checking for project-specific content that shouldn't be in template..."
+          
+          # Define patterns that indicate project-specific content
+          PROJECT_PATTERNS=(
+            "Beta-Trader"
+            "beta-trader"
+            "NautilusTrader"
+            "nautilus"
+          )
+          
+          # Files to check
+          FILES_TO_CHECK=(
+            "README.md"
+            "settings.json"
+            ".claude/settings.json"
+            ".gemini/config.yaml"
+            ".continue/config.yaml"
+          )
+          
+          VIOLATIONS_FOUND=0
+          
+          for file in "${FILES_TO_CHECK[@]}"; do
+            if [ -f "$file" ]; then
+              for pattern in "${PROJECT_PATTERNS[@]}"; do
+                if grep -qi "$pattern" "$file"; then
+                  echo "::error file=$file::Found project-specific content '$pattern' in $file"
+                  VIOLATIONS_FOUND=1
+                fi
+              done
+            fi
+          done
+          
+          echo "violations_found=$VIOLATIONS_FOUND" >> $GITHUB_OUTPUT
+      
+      - name: Check for missing placeholders
+        id: check_placeholders
+        run: |
+          echo "Checking for required placeholders..."
+          
+          # Define required placeholders
+          REQUIRED_PLACEHOLDERS=(
+            "{{PROJECT_NAME}}"
+            "{{PROJECT_DESCRIPTION}}"
+            "{{PROJECT_TYPE}}"
+          )
+          
+          # Files that must contain placeholders
+          TEMPLATE_FILES=(
+            "settings.json"
+            ".claude/settings.json"
+            ".gemini/config.yaml"
+            ".continue/config.yaml"
+          )
+          
+          MISSING_PLACEHOLDERS=0
+          
+          for file in "${TEMPLATE_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              for placeholder in "${REQUIRED_PLACEHOLDERS[@]}"; do
+                if ! grep -q "$placeholder" "$file"; then
+                  echo "::warning file=$file::Missing required placeholder '$placeholder' in $file"
+                  MISSING_PLACEHOLDERS=1
+                fi
+              done
+            fi
+          done
+          
+          echo "missing_placeholders=$MISSING_PLACEHOLDERS" >> $GITHUB_OUTPUT
+      
+      - name: Check template structure
+        id: check_structure
+        run: |
+          echo "Verifying template directory structure..."
+          
+          REQUIRED_DIRS=(
+            ".claude"
+            ".gemini"
+            ".continue"
+            ".continue/mcpServers"
+            ".github/workflows"
+            "docs/wiki"
+            "template"
+          )
+          
+          MISSING_DIRS=0
+          
+          for dir in "${REQUIRED_DIRS[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "::error::Required directory '$dir' is missing"
+              MISSING_DIRS=1
+            fi
+          done
+          
+          REQUIRED_FILES=(
+            "README.md"
+            "setup.sh"
+            "settings.json"
+            ".claude/settings.json"
+            ".gemini/config.yaml"
+            ".gemini/styleguide.md"
+            ".continue/config.yaml"
+            ".continue/mcpServers/mcp-servers.yaml"
+            "template/README.md"
+            "template/setup.sh"
+          )
+          
+          MISSING_FILES=0
+          
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "::error::Required file '$file' is missing"
+              MISSING_FILES=1
+            fi
+          done
+          
+          if [ $MISSING_DIRS -eq 1 ] || [ $MISSING_FILES -eq 1 ]; then
+            echo "structure_issues=1" >> $GITHUB_OUTPUT
+          else
+            echo "structure_issues=0" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Report Results
+        if: always()
+        run: |
+          echo "## Template Protection Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.check_content.outputs.violations_found }}" == "1" ]; then
+            echo "❌ **FAILED**: Project-specific content detected" >> $GITHUB_STEP_SUMMARY
+            echo "This template repository should not contain project-specific content." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No project-specific content detected" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.check_placeholders.outputs.missing_placeholders }}" == "1" ]; then
+            echo "⚠️ **WARNING**: Some placeholders are missing" >> $GITHUB_STEP_SUMMARY
+            echo "Template files should contain placeholders like {{PROJECT_NAME}}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ All required placeholders present" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.check_structure.outputs.structure_issues }}" == "1" ]; then
+            echo "❌ **FAILED**: Template structure is incomplete" >> $GITHUB_STEP_SUMMARY
+            echo "Some required directories or files are missing." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Template structure is complete" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📖 Documentation" >> $GITHUB_STEP_SUMMARY
+          echo "- [Proper Template Usage](./docs/wiki/Proper-Template-Usage.md)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Common Mistakes](./docs/wiki/Common-Mistakes.md)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Quick Start Guide](./docs/wiki/Quick-Start-Guide.md)" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Fail if violations found
+        if: steps.check_content.outputs.violations_found == '1' || steps.check_structure.outputs.structure_issues == '1'
+        run: |
+          echo "::error::Template protection check failed!"
+          echo "⚠️ This is a TEMPLATE repository. Do not push project-specific changes here."
+          echo "📖 See docs/wiki/Proper-Template-Usage.md for correct usage."
+          exit 1

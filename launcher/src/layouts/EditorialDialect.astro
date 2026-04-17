@@ -1,0 +1,61 @@
+---
+/**
+ * EditorialDialect.astro
+ *
+ * Editorial layout dialect — prose-forward, ~960px reading column with a
+ * wider bleed track for figures and tables. Use this for long-form essays,
+ * working papers, blog-style writing, or any page where the reader is
+ * reading linearly rather than scanning.
+ *
+ * Drop-cap renders on the first paragraph of the slot. The .bleed utility
+ * class lets a figure escape the reading column out to the wider track.
+ */
+import Base from './Base.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogType?: 'website' | 'article';
+}
+const { title, description, canonical, ogType = 'article' } = Astro.props;
+---
+
+<Base title={title} description={description} canonical={canonical} ogType={ogType}>
+  <div class="dialect dialect--editorial container container--editorial">
+    <article class="prose">
+      <slot />
+    </article>
+  </div>
+</Base>
+
+<style is:global>
+  .dialect--editorial {
+    padding-block: clamp(4rem, 10vw, 7rem);
+  }
+
+  .dialect--editorial .prose > p:first-of-type::first-letter {
+    font-family: var(--ff-serif);
+    font-size: 3.5em;
+    float: left;
+    line-height: 0.85;
+    padding: 0.1em 0.15em 0 0;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  /* Bleed figures and tables out to the wider editorial track. */
+  .dialect--editorial .prose .bleed {
+    width: min(var(--max-editorial-bleed), 100vw);
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Footnotes, citations, and metadata sit in a quieter register. */
+  .dialect--editorial .prose .meta,
+  .dialect--editorial .prose figcaption {
+    font-size: var(--fs-small);
+    color: var(--steel);
+    line-height: var(--lh-ui);
+  }
+</style>

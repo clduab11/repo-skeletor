@@ -1,0 +1,42 @@
+---
+/**
+ * sparse.astro — Sparse dialect demo
+ *
+ * Single-essay register. The page is intentionally short — sparse is for
+ * forward-positioning pages, manifesto statements, and coming-soon stubs.
+ * One thesis, one paragraph of evidence, one quiet status line.
+ *
+ * The <p class="lede"> and <h1 class="display"> utilities are defined
+ * inside SparseDialect.astro's scoped style block.
+ */
+import SparseDialect from '../layouts/SparseDialect.astro';
+import Lockup from '../components/Lockup.astro';
+---
+
+<SparseDialect
+  title="Sparse"
+  description="Sparse dialect demo — single-thesis page with generous whitespace and a serif display headline."
+>
+  <header>
+    <Lockup variant="sparse" height={32} eager />
+  </header>
+
+  <h1 class="display">One thesis, balanced for the page.</h1>
+
+  <p class="lede">
+    A short serif lede in the same family as the headline. Two sentences
+    at most — the page is meant to feel deliberate, not packed. Replace
+    this with your own positioning paragraph.
+  </p>
+
+  <p>
+    Body paragraphs sit in the default sans register. Use one or two of
+    them at most; if you find yourself writing more, the page probably
+    belongs in the editorial dialect instead.
+  </p>
+
+  <p class="t-caption" style="color: var(--steel);">
+    Status: replace this caption with whatever quiet status indicator
+    makes sense — a date, a cadence, a "last updated" line.
+  </p>
+</SparseDialect>
