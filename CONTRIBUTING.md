@@ -8,12 +8,14 @@ Thank you for your interest in contributing to the repo-skeletor template! This 
 
 `repo-skeletor` is a **template repository** for creating new projects with AI-augmented development workflows. It provides pre-configured setups for:
 
-- Claude Code
-- Gemini AI
-- Continue.dev
-- Linear
-- Notion
-- GitHub Actions
+- Claude Code (CLI + GitHub Action, subagents, slash commands)
+- Codex CLI (OpenAI's sandboxed implementation agent)
+- GitHub Copilot (editor inline completions)
+- Linear (issue tracking + MCP)
+- Notion (documentation + MCP)
+- GitHub Actions (CI, auto-review, sync, template protection)
+- MCP shared catalog (`.mcp.json`) consumed by Claude Code + Codex
+- Pre-commit framework (gitleaks, conventional-commits, placeholder guard)
 
 ---
 
@@ -124,9 +126,10 @@ git checkout -b feature/your-feature-name
 ### 2. Make Your Changes
 
 **For template configuration changes:**
-- Edit files in the root directory (`.claude/`, `.gemini/`, etc.)
-- Update `template/` directory to match
-- Ensure placeholders like `{{PROJECT_NAME}}` are preserved
+- Edit the authoritative config files at repo root: `.claude/`, `.codex/`, `.mcp.json`, `.pre-commit-config.yaml`, `.markdownlint.yaml`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.github/branch-protection.json`
+- Ensure install-time placeholders like `{{PROJECT_NAME}}`, `{{PROJECT_DESCRIPTION}}`, `{{PROJECT_TYPE}}` are preserved
+- Keep runtime placeholders (`{{USER}}`, `{{LINEAR_ID}}`, `{{DESCRIPTION}}`, `{{VERCEL_PROJECT_ID}}`, `{{PLACEHOLDER}}`, `{{PLACEHOLDERS}}`) whitelisted in `scripts/check-placeholders.sh`
+- Keep `.mcp.json` and `.codex/config.toml` in sync — if you add an MCP server to one, add it to the other
 
 **For setup script changes:**
 - Edit `setup.sh`
@@ -149,15 +152,16 @@ mkdir test-project
 cd test-project
 
 # Copy template files
-cp -r /path/to/repo-skeletor/{.claude,.gemini,.continue,setup.sh,settings.json,*.yml} .
+cp -r /path/to/repo-skeletor/{.claude,.codex,.github,docs,scripts,.mcp.json,.pre-commit-config.yaml,.markdownlint.yaml,AGENTS.md,CLAUDE.md,FORK_AND_CUSTOMIZE.md,setup.sh,README.md} .
 
 # Run setup
 ./setup.sh
 
-# Verify placeholders were replaced
-grep -r "{{PROJECT_NAME}}" .
+# Verify install-time placeholders were replaced (should return nothing)
+grep -rE "\{\{(PROJECT_NAME|PROJECT_DESCRIPTION|PROJECT_TYPE)\}\}" .
 
-# Should only appear in template/ directory
+# Verify runtime placeholders survived (expected — these are resolved per-commit, not at setup time)
+grep -rE "\{\{(USER|LINEAR_ID|DESCRIPTION|VERCEL_PROJECT_ID|PLACEHOLDER|PLACEHOLDERS)\}\}" .
 ```
 
 **Test workflows:**

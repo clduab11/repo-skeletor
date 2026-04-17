@@ -6,25 +6,33 @@ Understanding the repository organization and key files in repo-skeletor.
 
 ```
 repo-skeletor/
+├── .claude/
+│   ├── settings.json           # Claude Code permissions + hooks
+│   ├── commands/               # Project slash commands (/review, /spec, ...)
+│   └── agents/                 # Subagent definitions (code-reviewer, etc.)
+├── .codex/
+│   └── config.toml             # Codex CLI config (model, profiles, MCP mirror)
 ├── .github/
-│   └── workflows/           # GitHub Actions (not in template by default)
+│   ├── branch-protection.json  # Declarative branch protection for main
+│   ├── copilot-instructions.md # GitHub Copilot guidance
+│   ├── labels.yml              # Canonical label taxonomy
+│   └── workflows/              # GitHub Actions (CI, claude.yml, deploy, sync, template-protection)
 ├── docs/
-│   └── wiki/               # This documentation
-├── golden-repo-template/   # Template files to be copied
-│   ├── README.md           # Template README
-│   └── setup.sh           # Setup script
-├── ci.yml                 # Continuous Integration workflow
-├── claude.yml             # Claude Code automation
-├── deploy.yml             # Deployment pipeline
-├── linear-to-notion-sync.yml   # Linear → Notion sync
-├── notion-spec-to-linear.yml   # Notion → Linear conversion
-├── config.yaml            # Continue.dev configuration
-├── mcp-servers.yaml       # MCP server definitions
-├── settings.json          # Claude Code settings
-├── styleguide.md          # Project coding standards
-├── setup.sh               # Interactive setup script
-├── LICENSE                # License file
-└── README.md              # Main documentation
+│   ├── coding-style.md         # Project-wide coding standards (agent source of truth)
+│   └── wiki/                   # This documentation
+├── scripts/
+│   ├── install-hooks.sh        # Installs pre-commit hooks via the pre-commit framework
+│   ├── apply-branch-protection.sh  # Applies .github/branch-protection.json via gh CLI
+│   └── check-placeholders.sh   # Guards staged commits against stray {{PLACEHOLDERS}}
+├── .mcp.json                   # Shared MCP server catalog (Claude Code + Codex)
+├── .pre-commit-config.yaml     # Pre-commit framework config (gitleaks, conventional-commits, ...)
+├── .markdownlint.yaml          # Markdown lint rules
+├── AGENTS.md                   # Cross-agent source of truth (rules every agent reads first)
+├── CLAUDE.md                   # Claude-specific nuance (complements AGENTS.md)
+├── FORK_AND_CUSTOMIZE.md       # Step-by-step customization checklist
+├── setup.sh                    # Interactive bootstrap script
+├── LICENSE
+└── README.md
 ```
 
 ## 🔧 Configuration Files
@@ -51,49 +59,61 @@ Configures Claude Code behavior, permissions, and integrations:
 - **allowedDirectories**: Restricts file access for security
 - **integrations**: Linear and Notion integration settings
 
-#### `config.yaml` - Continue.dev Configuration
-Main configuration for Continue.dev AI assistant:
-```yaml
-models:
-  - name: "claude-sonnet"
-    provider: "anthropic"
-    model: "claude-sonnet-4-20250514"
-    
-chat: claude-sonnet
-autocomplete: claude-haiku
+#### `.codex/config.toml` - Codex CLI Configuration
+TOML config for OpenAI Codex CLI. Controls model, approval policy, sandbox mode, and mirrors the MCP server catalog:
+```toml
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[profiles.review]
+approval_policy = "never"
+sandbox_mode = "read-only"
+
+[mcp_servers.linear]
+transport = "http"
+url = "https://mcp.linear.app/sse"
 ```
 
 **Key sections:**
-- **models**: Available AI models and their configurations
-- **contextProviders**: Sources of context (files, git, docs)
-- **slashCommands**: Custom commands like `/review`, `/test`
-- **rules**: Project-specific coding guidelines
+- **model / approval_policy / sandbox_mode**: Default agent posture
+- **profiles.***: Named profiles (`review`, `ship`, etc.) for different postures
+- **mcp_servers.***: Mirror of `.mcp.json` so Codex and Claude share a catalog
+- **shell_environment_policy**: Excludes `*_TOKEN`, `*_SECRET`, `*_KEY`, `*_PASSWORD` from shell inheritance
 
-#### `mcp-servers.yaml` - MCP Server Definitions
-Configures Model Context Protocol servers for enhanced AI capabilities:
-```yaml
-mcpServers:
-  - name: "filesystem"
-    command: "npx"
-    args: ["-y", "@anthropic/mcp-server-filesystem"]
-    
-  - name: "github"
-    command: "npx"
-    args: ["-y", "@anthropic/mcp-server-github"]
-    env:
-      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+#### `.mcp.json` - Shared MCP Server Catalog
+Canonical MCP catalog consumed natively by Claude Code (and mirrored into `.codex/config.toml`):
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" }
+    },
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/sse"
+    }
+  }
+}
 ```
 
-**Available servers:**
-- **filesystem**: Safe file operations
+**Available servers (default catalog):**
+- **filesystem**: Safe file operations scoped to the repo
 - **github**: Repository, PR, and issue management
-- **linear**: Issue tracking integration
-- **notion**: Documentation access
-- **web-search**: Research and documentation lookup
+- **git**: Local git state + log
 - **memory**: Persistent context across sessions
+- **sequential-thinking**: Step-by-step reasoning helper
+- **linear**: Issue tracking (HTTP + OAuth)
+- **notion**: Documentation access (HTTP + OAuth)
+- **context7**: Up-to-date library documentation (HTTP)
 
-#### `styleguide.md` - Coding Standards
-Project-specific coding conventions and style guide. Used by AI assistants for consistent code generation.
+#### `docs/coding-style.md` - Coding Standards
+Project-wide coding conventions. Referenced by `AGENTS.md`, `CLAUDE.md`, and `.github/copilot-instructions.md` as the single source of truth. The Claude review workflow also cites it during auto-reviews.
+
+#### `AGENTS.md` - Cross-Agent Source of Truth
+The file every agent reads first. Contains hard rules, the MCP catalog table, placeholder taxonomy, and conflict-resolution decision tree. Edit this file when a rule should apply to every agent; edit `CLAUDE.md` only for Claude-specific nuance.
 
 ### Workflow Files
 
@@ -197,24 +217,37 @@ After running `setup.sh`, your new project will have:
 ```
 your-project/
 ├── .claude/
-│   └── settings.json          # ← Customized with your project name
-├── .gemini/
-│   ├── config.yaml            # ← Gemini configuration
-│   └── styleguide.md          # ← Your coding standards
+│   ├── settings.json           # ← Claude Code permissions (customized)
+│   ├── commands/               # ← Project slash commands
+│   └── agents/                 # ← Subagent definitions
+├── .codex/
+│   └── config.toml             # ← Codex CLI config (mirrors MCP catalog)
 ├── .github/
+│   ├── branch-protection.json  # ← Applied via scripts/apply-branch-protection.sh
+│   ├── copilot-instructions.md # ← Copilot guidance
+│   ├── labels.yml              # ← Label taxonomy
 │   └── workflows/
-│       ├── claude.yml         # ← AI automation
-│       ├── ci.yml             # ← CI pipeline
-│       ├── deploy.yml         # ← Deployment
+│       ├── claude.yml          # ← @claude + auto-review
+│       ├── ci.yml              # ← CI pipeline
+│       ├── deploy.yml          # ← Deployment
+│       ├── template-protection.yml
 │       ├── linear-to-notion-sync.yml
 │       └── notion-spec-to-linear.yml
-├── .continue/
-│   ├── config.yaml            # ← Continue.dev config
-│   └── mcpServers/
-│       └── mcp-servers.yaml   # ← MCP servers
-├── src/                       # ← Your source code
-├── tests/                     # ← Your tests
-├── .env                       # ← Your secrets (gitignored)
+├── docs/
+│   ├── coding-style.md         # ← Coding standards (agent source of truth)
+│   └── wiki/                   # ← This documentation
+├── scripts/
+│   ├── install-hooks.sh
+│   ├── apply-branch-protection.sh
+│   └── check-placeholders.sh
+├── .mcp.json                   # ← Shared MCP catalog (Claude + Codex)
+├── .pre-commit-config.yaml
+├── .markdownlint.yaml
+├── AGENTS.md                   # ← Cross-agent rules (read first)
+├── CLAUDE.md                   # ← Claude-specific nuance
+├── src/                        # ← Your source code
+├── tests/                      # ← Your tests
+├── .env                        # ← Your secrets (gitignored)
 ├── .env.example               # ← Template for secrets
 ├── .gitignore                 # ← Updated with template patterns
 ├── package.json               # ← Your project dependencies

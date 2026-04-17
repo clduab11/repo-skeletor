@@ -1,0 +1,109 @@
+# pre-commit hooks for {{PROJECT_NAME}}
+# Install:   ./scripts/install-hooks.sh
+# Run once:  pre-commit run --all-files
+# Upstream:  https://pre-commit.com
+
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+  - pre-push
+
+default_stages: [pre-commit]
+
+fail_fast: false
+
+repos:
+  # ----------------------------------------------------------------
+  # Baseline sanity — run on every file, every commit
+  # ----------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: no-commit-to-branch
+        args: [--branch, main]
+
+  # ----------------------------------------------------------------
+  # Secret scanning — catches accidental key/token commits
+  # ----------------------------------------------------------------
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+
+  # ----------------------------------------------------------------
+  # Commit message — enforce Conventional Commits
+  # ----------------------------------------------------------------
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args:
+          - feat
+          - fix
+          - refactor
+          - docs
+          - style
+          - test
+          - chore
+          - ci
+          - perf
+          - revert
+
+  # ----------------------------------------------------------------
+  # TypeScript / JavaScript — lint + format before commit
+  # ----------------------------------------------------------------
+  # These run the project's own scripts so they track package.json.
+  # If pnpm isn't installed, the hook is a no-op (exits 0) to keep
+  # non-JS contributors unblocked.
+  - repo: local
+    hooks:
+      - id: pnpm-lint
+        name: pnpm lint (staged)
+        entry: bash -c 'command -v pnpm >/dev/null 2>&1 && pnpm lint --no-error-on-unmatched-pattern || exit 0'
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: pnpm-typecheck
+        name: pnpm typecheck
+        entry: bash -c 'command -v pnpm >/dev/null 2>&1 && pnpm typecheck || exit 0'
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+  # ----------------------------------------------------------------
+  # Markdown / docs — keep wiki and README consistent
+  # ----------------------------------------------------------------
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.41.0
+    hooks:
+      - id: markdownlint
+        args: [--config, .markdownlint.yaml, --ignore, CHANGELOG.md]
+
+  # ----------------------------------------------------------------
+  # Placeholder guard — catch unresolved {{TOKEN}}s pre-commit
+  # ----------------------------------------------------------------
+  # Runtime tokens ({{USER}}, {{LINEAR_ID}}, {{DESCRIPTION}},
+  # {{VERCEL_PROJECT_ID}}, {{PLACEHOLDER}}, {{PLACEHOLDERS}}) are allowed
+  # per the taxonomy in AGENTS.md. Everything else fails the hook.
+  - repo: local
+    hooks:
+      - id: placeholder-guard
+        name: unresolved-placeholder guard
+        entry: scripts/check-placeholders.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]

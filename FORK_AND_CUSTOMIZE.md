@@ -15,9 +15,11 @@ This is the walkthrough for downstream consumers — clone YOUR new repo, run `.
 | Node ≥ 20 | Launcher path only | https://nodejs.org |
 | Linear account | Sync workflows | https://linear.app |
 | Notion account | Sync workflows | https://notion.so |
-| Anthropic API key | Claude Code + Continue.dev | https://console.anthropic.com |
+| Anthropic API key | Claude Code + `claude.yml` workflow | https://console.anthropic.com |
+| OpenAI API key | Codex CLI (optional) | https://platform.openai.com |
+| `pre-commit` | Commit/push guards | https://pre-commit.com (installer: `./scripts/install-hooks.sh`) |
 
-You can skip Linear/Notion/Anthropic and the matching workflows will simply no-op — they fail closed without secrets.
+You can skip Linear/Notion/Anthropic/OpenAI and the matching workflows will simply no-op — they fail closed without secrets.
 
 ---
 
@@ -86,7 +88,17 @@ grep -r '{{PROJECT_NAME}}' . --exclude-dir=node_modules --exclude-dir=.git
 
 ---
 
-## Step 4 — Set GitHub secrets
+## Step 4 — Install pre-commit hooks
+
+```bash
+./scripts/install-hooks.sh
+```
+
+Installs the `pre-commit` framework (via pipx/brew/pip3), wires up the three hook types this repo uses, and warms the cache so your first commit isn't slow. Re-runnable if something goes sideways.
+
+---
+
+## Step 5 — Set GitHub secrets
 
 ```bash
 gh secret set ANTHROPIC_API_KEY --body "sk-ant-..."
@@ -99,14 +111,13 @@ gh secret set NOTION_SPEC_DATABASE_ID --body "..."
 Optional, only if you want them:
 
 ```bash
-gh secret set GOOGLE_AI_API_KEY --body "..."
-gh secret set VOYAGE_API_KEY    --body "..."
+gh secret set OPENAI_API_KEY    --body "sk-..."    # for Codex CLI, if you use it
 gh secret set SLACK_WEBHOOK_URL --body "https://hooks.slack.com/..."
 ```
 
 ---
 
-## Step 5 — Apply the label taxonomy
+## Step 6 — Apply the label taxonomy
 
 ```bash
 # This triggers .github/workflows/sync-labels.yml against .github/labels.yml
@@ -117,7 +128,7 @@ Within a minute, your repo will have the standard `priority:*`, `type:*`, `statu
 
 ---
 
-## Step 6 — Decide on the launcher path
+## Step 7 — Decide on the launcher path
 
 If you're building a static site, keep `launcher/` and read [`launcher/README.md`](./launcher/README.md).
 
@@ -132,7 +143,7 @@ The bootstrap layer is fully independent. Removing the launcher costs you nothin
 
 ---
 
-## Step 7 — First commit & push
+## Step 8 — First commit & push
 
 ```bash
 git add -A
@@ -151,7 +162,7 @@ That's expected on day zero.
 
 ---
 
-## Step 8 — Verify the agent loop
+## Step 9 — Verify the agent loop
 
 Open an issue in your new repo titled "Test Claude integration". In the issue body:
 
@@ -167,7 +178,7 @@ Within ~2 minutes you should see a reply from `claude[bot]`. If nothing happens:
 
 ---
 
-## Step 9 — Wire up Linear/Notion sync (optional)
+## Step 10 — Wire up Linear/Notion sync (optional)
 
 See [`docs/wiki/Linear-Notion-Sync.md`](./docs/wiki/Linear-Notion-Sync.md) for the full webhook setup. Short version:
 
@@ -179,14 +190,17 @@ See [`docs/wiki/Linear-Notion-Sync.md`](./docs/wiki/Linear-Notion-Sync.md) for t
 
 ---
 
-## Step 10 — Branch protection
+## Step 11 — Branch protection
 
-The template doesn't auto-apply branch protection (GitHub's API requires interactive auth for some settings). Apply manually under Settings → Branches → Add rule for `main`:
+Apply the declarative ruleset in `.github/branch-protection.json`:
 
-- ✅ Require a pull request before merging
-- ✅ Require status checks to pass: `CI Success`
-- ✅ Require linear history (matches the conventional-commits pattern)
-- ✅ Do not allow force pushes
+```bash
+./scripts/apply-branch-protection.sh
+```
+
+The script resolves your repo from `git remote`, reads the JSON, and PUTs it to the GitHub API. Re-runnable any time you edit the rules — GitHub replaces the ruleset atomically.
+
+If `gh` is unauthenticated, run `gh auth login` first. If you'd rather click through the UI, every rule in the JSON maps 1:1 to a checkbox under Settings → Branches → Add rule for `main`.
 
 ---
 

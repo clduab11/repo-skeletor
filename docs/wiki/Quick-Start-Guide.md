@@ -211,10 +211,21 @@ git remote -v  # Verify the change
 2. Comment with `@claude` followed by your request
 3. Claude should respond within a few minutes
 
-### Test Continue.dev (if installed)
-1. Open your project in VS Code
-2. Ensure Continue.dev extension is installed
-3. Try a slash command like `/review` on some code
+### Test Codex CLI
+1. Install Codex: `npm i -g @openai/codex` (or follow current OpenAI docs)
+2. From the repo root, run `codex --profile review` to start a read-only session
+3. Ask it to summarize `AGENTS.md` — the shared agent rules should load
+
+### Test Claude Code locally
+1. Install Claude Code: `npm i -g @anthropic-ai/claude-code`
+2. Run `claude` from the repo root
+3. Try `/review` (slash command defined in `.claude/commands/review.md`)
+4. Confirm MCP servers connect — run `/mcp` to list them
+
+### Test GitHub Copilot
+1. Install the Copilot extension in VS Code (or your editor of choice)
+2. Open any file and confirm inline suggestions appear
+3. Copilot respects `.github/copilot-instructions.md` — edits in this file change its behavior
 
 ## Next Steps
 

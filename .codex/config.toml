@@ -1,0 +1,115 @@
+# Codex CLI — project configuration for {{PROJECT_NAME}}
+# Codex reads this file from the repo root on startup when launched with
+# `codex` inside this directory. Global defaults live in ~/.codex/config.toml.
+# Anything here overrides the user-level config for this project only.
+#
+# Upstream reference: https://github.com/openai/codex (config.toml schema)
+
+# ------------------------------------------------------------------
+# Model + profile
+# ------------------------------------------------------------------
+# Default to the workspace-write sandbox with on-request approvals. This
+# matches the hard rules in CLAUDE.md: ask-before-destructive, write inside
+# the repo, never touch the system outside it.
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+# ------------------------------------------------------------------
+# Project shared context — what Codex should read first
+# ------------------------------------------------------------------
+# Codex auto-discovers AGENTS.md at repo root. We document the reading order
+# here so the agent knows how to triage guidance when files disagree.
+#   1. AGENTS.md           — cross-agent shared instructions (source of truth)
+#   2. docs/coding-style.md — authoritative style guide
+#   3. CLAUDE.md           — Claude-specific working memory (informational for Codex)
+#
+# If AGENTS.md and CLAUDE.md disagree, AGENTS.md wins. CLAUDE.md contains
+# Claude-only agent-topology details that do not apply to Codex.
+
+[project_doc]
+max_bytes = 131072
+
+# ------------------------------------------------------------------
+# Sandbox policy — matches CLAUDE.md hard rules
+# ------------------------------------------------------------------
+# workspace-write lets Codex edit files under the repo without prompting,
+# but still requires approval for:
+#   - network calls
+#   - writes outside the workspace
+#   - destructive git operations (force-push, branch deletion)
+#
+# The approval gate is what keeps "never commit secrets" and "never downgrade
+# TypeScript strictness" enforceable at runtime.
+
+[sandbox_workspace_write]
+network_access = false
+writable_roots = []
+exclude_tmpdir_env_var = false
+exclude_slash_tmp = false
+
+# ------------------------------------------------------------------
+# Shell defaults
+# ------------------------------------------------------------------
+# Codex runs commands via bash. We keep the default shell profile so
+# pnpm/npm/git all resolve the same way CI does.
+
+[shell_environment_policy]
+inherit = "core"
+exclude = ["*_TOKEN", "*_SECRET", "*_KEY", "*_PASSWORD"]
+set = { CI = "false", CODEX_PROJECT = "{{PROJECT_NAME}}" }
+
+# ------------------------------------------------------------------
+# MCP servers — mirror of .mcp.json
+# ------------------------------------------------------------------
+# Codex reads MCP servers from this file (not from .mcp.json, which is
+# Claude Code's format). Keep these two in sync when adding/removing servers.
+# Transport types:
+#   - stdio  → "command" + "args" + optional "env"
+#   - http   → "url" (OAuth negotiated on first call)
+
+[mcp_servers.filesystem]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
+
+[mcp_servers.github]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+env = { GITHUB_PERSONAL_ACCESS_TOKEN = "${GITHUB_TOKEN}" }
+
+[mcp_servers.git]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-git", "--repository", "${workspaceFolder}"]
+
+[mcp_servers.memory]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-memory"]
+
+[mcp_servers.sequential-thinking]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+
+[mcp_servers.linear]
+url = "https://mcp.linear.app/mcp"
+
+[mcp_servers.notion]
+url = "https://mcp.notion.com/mcp"
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+
+# ------------------------------------------------------------------
+# Profiles
+# ------------------------------------------------------------------
+# Switch profiles with `codex --profile <name>`. `review` tightens the
+# sandbox for read-only audits; `ship` loosens it for end-of-feature CI.
+
+[profiles.review]
+model = "gpt-5-codex"
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+
+[profiles.ship]
+model = "gpt-5-codex"
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"

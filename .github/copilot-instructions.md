@@ -78,9 +78,8 @@ This project uses multiple AI assistants, each with a distinct responsibility:
 
 | Tool           | Primary Role                                        |
 |----------------|-----------------------------------------------------|
-| **Claude Code** | PR reviews, complex reasoning, code generation      |
-| **Gemini**      | Spec generation, style guide enforcement            |
-| **Continue.dev**| Slash commands (`/review`, `/test`, `/doc`, etc.)   |
+| **Claude Code** | Primary implementation, PR reviews, subagent orchestration (reviewer/tester/security), slash commands (`/review`, `/test`, `/doc`, …) |
+| **Codex CLI**   | Alternate implementation agent with sandboxed approval flow; shares MCP catalog with Claude |
 | **Copilot**     | Inline suggestions, chat assistance, incremental review |
 
 **Copilot's focus areas:**
@@ -183,9 +182,10 @@ and suggest remediation steps.
 
 ### 3.1 Authoritative Style Reference
 
-The full coding style guide lives at `.gemini/styleguide.md`. This section
+The full coding style guide lives at `docs/coding-style.md`. This section
 summarizes the key conventions that Copilot should enforce. When in doubt,
-defer to the styleguide.
+defer to the styleguide. For cross-agent shared rules (applied uniformly to
+Claude, Codex, and Copilot) see `AGENTS.md` at the repo root.
 
 ### 3.2 TypeScript Strict Mode
 
@@ -1351,12 +1351,17 @@ This file works alongside other project documentation:
 
 | Document                  | Purpose                                     |
 |---------------------------|---------------------------------------------|
-| `.gemini/styleguide.md`   | Detailed coding style guide (authoritative) |
+| `AGENTS.md`               | Cross-agent shared rules (source of truth)  |
+| `CLAUDE.md`               | Claude Code working agreements + subagents  |
+| `docs/coding-style.md`    | Detailed coding style guide (authoritative) |
 | `CONTRIBUTING.md`         | Contribution guidelines and processes       |
 | `README.md`               | Project overview and setup instructions     |
-| `ci.yml`                  | CI pipeline configuration                   |
+| `.github/workflows/ci.yml`| CI pipeline configuration                   |
 | `.claude/settings.json`   | Claude Code project configuration           |
-| `.continue/config.yaml`   | Continue.dev AI assistant configuration     |
+| `.mcp.json`               | Shared MCP server registry (Claude native)  |
+| `.codex/config.toml`      | Codex CLI project config (sandbox, MCP)     |
+| `.pre-commit-config.yaml` | Pre-commit hook definitions                 |
+| `.github/branch-protection.json` | Branch protection ruleset            |
 
 ## Official GitHub Copilot Documentation
 

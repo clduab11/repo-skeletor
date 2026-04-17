@@ -7,7 +7,7 @@ The `launcher/` directory is an opt-in Astro SSG starter that sits inside the [`
 | Bootstrap (root)                      | Launcher (`launcher/`)                  |
 |---------------------------------------|-----------------------------------------|
 | `.github/workflows/` org automation   | `launcher/.github/workflows/` deploy   |
-| `.claude/`, `.continue/`, `.gemini/`  | (uses parent's agent configs)           |
+| `.claude/`, `.codex/`, `.mcp.json`    | (uses parent's agent + MCP configs)     |
 | `docs/brand_guide.md`                 | Consumed by `scripts/extract-tokens.mjs`|
 | `scripts/` (label-sync etc.)          | `scripts/` (extract-tokens, verify)     |
 | `public/brand/` (master SVGs)         | (referenced via path, not duplicated)   |

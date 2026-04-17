@@ -1,0 +1,65 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/mcp.json",
+  "_comment": "Project-scoped MCP servers for {{PROJECT_NAME}}. Claude Code auto-discovers this file at the repo root. Codex reads .codex/config.toml which references these same env vars. All ${VAR} placeholders resolve from the local shell or .env at agent-start time. Install-time {{TOKENS}} are rewritten by setup.sh.",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${workspaceFolder}"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp",
+      "_comment": "Linear ships a first-party hosted MCP. Auth is handled by the agent's OAuth flow on first call; no API key in env."
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp",
+      "_comment": "Notion ships a first-party hosted MCP. Auth is OAuth at first use."
+    },
+    "git": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-git",
+        "--repository",
+        "${workspaceFolder}"
+      ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "_comment": "Upstash's hosted docs MCP. Pulls current library docs so agents don't hallucinate old APIs."
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    }
+  }
+}

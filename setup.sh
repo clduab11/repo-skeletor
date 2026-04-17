@@ -143,15 +143,31 @@ replace_placeholders() {
 
 # Process all config files (canonical paths only — no root duplicates anymore)
 replace_placeholders ".claude/settings.json"
-replace_placeholders ".gemini/config.yaml"
-replace_placeholders ".gemini/styleguide.md"
-replace_placeholders ".continue/config.yaml"
-replace_placeholders ".continue/mcpServers/mcp-servers.yaml"
+replace_placeholders ".mcp.json"
+replace_placeholders ".codex/config.toml"
+replace_placeholders ".pre-commit-config.yaml"
+replace_placeholders ".markdownlint.yaml"
 replace_placeholders ".github/copilot-instructions.md"
 replace_placeholders ".github/labels.yml"
+replace_placeholders ".github/branch-protection.json"
+replace_placeholders "AGENTS.md"
+replace_placeholders "CLAUDE.md"
+replace_placeholders "docs/coding-style.md"
 replace_placeholders "README.md"
 replace_placeholders "CONTRIBUTING.md"
 replace_placeholders "FORK_AND_CUSTOMIZE.md"
+
+# Claude Code slash commands + subagents
+if [[ -d ".claude/commands" ]]; then
+    for cmd in .claude/commands/*.md; do
+        replace_placeholders "$cmd"
+    done
+fi
+if [[ -d ".claude/agents" ]]; then
+    for agt in .claude/agents/*.md; do
+        replace_placeholders "$agt"
+    done
+fi
 
 # Wiki content also templated
 if [[ -d "docs/wiki" ]]; then
@@ -180,25 +196,33 @@ fi
 echo ""
 echo -e "${BLUE}Creating .env.example...${NC}"
 cat > .env.example << 'EOF'
-# API Keys
+# ========================================================================
+# AI agent keys
+# ========================================================================
+# Anthropic — Claude Code + .github/workflows/claude.yml PR review
 ANTHROPIC_API_KEY=sk-ant-...
-GOOGLE_AI_API_KEY=...
-VOYAGE_API_KEY=...
-PERPLEXITY_API_KEY=pplx-...
-BRAVE_API_KEY=...
+# OpenAI — Codex CLI (optional; omit if not using Codex)
+OPENAI_API_KEY=sk-...
 
-# Integration Keys
+# ========================================================================
+# Integration keys
+# ========================================================================
 LINEAR_API_KEY=lin_api_...
 NOTION_API_KEY=secret_...
+# GitHub fine-grained PAT — used by the github MCP server. Narrow scope:
+# repo + workflow are typically enough. Do NOT reuse a classic admin token.
 GITHUB_TOKEN=ghp_...
 
-# MCP Server Keys
-MEM0_API_KEY=...
-CONTEXT7_API_KEY=...
+# ========================================================================
+# MCP server keys (optional — most hosted MCPs OAuth on first call)
+# ========================================================================
+CONTEXT7_API_KEY=
 
-# Optional
-SENTRY_AUTH_TOKEN=...
-VERCEL_TOKEN=...
+# ========================================================================
+# Optional runtime
+# ========================================================================
+SENTRY_AUTH_TOKEN=
+VERCEL_TOKEN=
 DATABASE_URL=postgresql://...
 EOF
 echo -e "  ${GREEN}✓${NC} .env.example created"
@@ -241,9 +265,8 @@ Thumbs.db
 *.key
 secrets/
 
-# Continue.dev local
-.continue/.cache/
-.continue/sessions/
+# Pre-commit cache
+.pre-commit-cache/
 EOF
 echo -e "  ${GREEN}✓${NC} .gitignore updated"
 
@@ -345,9 +368,15 @@ echo -e "${GREEN}Happy coding!${NC}"
 echo ""
 echo "For help, see:"
 echo "   - docs/wiki/Proper-Template-Usage.md"
-echo "   - docs/wiki/Common-Mistakes.md"
-r-Template-Usage.md"
+echo "   - docs/wiki/Click-By-Click-First-Fork.md"
 echo "   - docs/wiki/Quick-Start-Guide.md"
 echo "   - docs/wiki/Customization-Guide.md"
 echo "   - docs/wiki/Common-Mistakes.md"
 echo ""
+
+# Final step — install pre-commit hooks so the first commit is guarded.
+if [[ -x "./scripts/install-hooks.sh" ]]; then
+    echo ""
+    echo -e "${BLUE}Installing pre-commit hooks...${NC}"
+    ./scripts/install-hooks.sh || echo -e "${YELLOW}   (hook install non-fatal — re-run ./scripts/install-hooks.sh later)${NC}"
+fi

@@ -1,0 +1,22 @@
+# markdownlint config for {{PROJECT_NAME}}
+# Only opinionated rules relaxed — everything else stays at default.
+
+# Line length — practical max, not dogma
+MD013:
+  line_length: 120
+  tables: false
+  code_blocks: false
+  headings: false
+
+# Allow inline HTML (needed for badges, callouts, <details>)
+MD033: false
+
+# Allow duplicate headings in different sections (e.g. multiple "Examples")
+MD024:
+  siblings_only: true
+
+# First line doesn't need to be H1 — many of our docs open with a blockquote
+MD041: false
+
+# Allow emphasis-as-heading in specific files (changelogs, wiki entries)
+MD036: false

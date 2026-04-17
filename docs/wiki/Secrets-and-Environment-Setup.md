@@ -16,9 +16,10 @@ repo-skeletor integrates with multiple services, each requiring authentication c
 
 | Secret | Used By | Required For |
 |--------|---------|--------------|
-| `ANTHROPIC_API_KEY` | Claude Code | AI assistance, code review |
-| `LINEAR_API_KEY` | Linear sync | Issue tracking integration |
-| `NOTION_API_KEY` | Notion sync | Documentation integration |
+| `ANTHROPIC_API_KEY` | Claude Code (CLI + Action) | AI assistance, code review, subagents |
+| `OPENAI_API_KEY` | Codex CLI | Sandboxed implementation agent |
+| `LINEAR_API_KEY` | Linear MCP + sync workflow | Issue tracking integration |
+| `NOTION_API_KEY` | Notion MCP + sync workflow | Documentation integration |
 
 ### Optional but Recommended
 
@@ -26,21 +27,19 @@ repo-skeletor integrates with multiple services, each requiring authentication c
 |--------|---------|---------|
 | `LINEAR_TEAM_ID` | Linear workflows | Team-specific operations |
 | `NOTION_SPEC_DATABASE_ID` | Notion workflows | Spec database access |
-| `GITHUB_TOKEN` | Continue.dev | Repo operations (auto-provided) |
+| `GITHUB_TOKEN` | GitHub MCP + local CLIs | Repo operations (auto-provided in Actions) |
 | `CODECOV_TOKEN` | CI workflow | Code coverage reporting |
 | `SNYK_TOKEN` | CI workflow | Security scanning |
 | `SLACK_WEBHOOK_URL` | Deploy workflow | Deployment notifications |
 
-### Optional AI/Tools
+### Optional AI / Tool Keys
 
 | Secret | Used By | Purpose |
 |--------|---------|---------|
-| `GOOGLE_AI_API_KEY` | Continue.dev | Gemini model access |
-| `VOYAGE_API_KEY` | Continue.dev | Embeddings & reranking |
-| `PERPLEXITY_API_KEY` | Continue.dev | Web search |
-| `BRAVE_API_KEY` | MCP servers | Web search |
-| `MEM0_API_KEY` | MCP servers | Persistent memory |
-| `CONTEXT7_API_KEY` | MCP servers | Library documentation |
+| `CONTEXT7_API_KEY` | Context7 MCP | Up-to-date library documentation |
+| `SENTRY_AUTH_TOKEN` | Sentry MCP / release tracking | Error monitoring + release notes |
+| `VERCEL_TOKEN` | Deploy workflow (optional) | Vercel deploys |
+| `DATABASE_URL` | App runtime | Database connection (local dev) |
 
 ---
 
@@ -59,22 +58,18 @@ Edit `.env` with your actual keys:
 ```bash
 # === Required ===
 ANTHROPIC_API_KEY=sk-ant-api03-...
+OPENAI_API_KEY=sk-proj-...
 LINEAR_API_KEY=lin_api_...
 NOTION_API_KEY=secret_...
+GITHUB_TOKEN=ghp_...                   # or github_pat_... for fine-grained
 
 # === Recommended ===
 LINEAR_TEAM_ID=a1b2c3d4-...
 NOTION_SPEC_DATABASE_ID=abc123...
 
-# === Optional AI ===
-GOOGLE_AI_API_KEY=AIza...
-VOYAGE_API_KEY=pa-...
-PERPLEXITY_API_KEY=pplx-...
-BRAVE_API_KEY=BSA...
-
 # === Optional MCP ===
-MEM0_API_KEY=...
 CONTEXT7_API_KEY=...
+SENTRY_AUTH_TOKEN=...
 
 # === Optional Tools ===
 CODECOV_TOKEN=...
@@ -83,7 +78,6 @@ SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
 
 # === Deployment (if applicable) ===
 VERCEL_TOKEN=...
-RAILWAY_TOKEN=...
 DATABASE_URL=postgresql://...
 ```
 
@@ -138,7 +132,7 @@ Add these as needed based on your configuration:
 
 ### Anthropic API Key (Claude)
 
-**Required for**: Claude Code GitHub Action, Continue.dev
+**Required for**: Claude Code (CLI + GitHub Action), Claude Code subagents, `@claude` PR workflow
 
 **Steps**:
 1. Go to [console.anthropic.com](https://console.anthropic.com)
@@ -259,13 +253,13 @@ https://notion.so/Page-Title-abc123def456
 
 ### GitHub Token
 
-**Required for**: Continue.dev GitHub operations
+**Required for**: GitHub MCP server (Claude Code + Codex shared catalog), local CLI operations
 
 **For GitHub Actions**: Automatically provided as `${{ secrets.GITHUB_TOKEN }}`
 
 **For local development**:
 1. Go to [github.com/settings/tokens](https://github.com/settings/tokens)
-2. Click **Generate new token** → **Generate new token (classic)**
+2. Click **Generate new token** → **Generate new token (classic)** (fine-grained tokens also work, see below)
 3. Name: "repo-skeletor-local"
 4. Scopes:
    - ✅ `repo` (full repository access)
@@ -274,36 +268,26 @@ https://notion.so/Page-Title-abc123def456
 5. Click **Generate token**
 6. Copy immediately (can't be viewed again)
 
-**Format**: `ghp_...`
+**Format**: `ghp_...` (classic) or `github_pat_...` (fine-grained)
 
 ---
 
-### Optional: Google AI API Key (Gemini)
+### OpenAI API Key (Codex CLI)
 
-**Used for**: Gemini models in Continue.dev
-
-**Steps**:
-1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
-2. Click **Create API key**
-3. Select project or create new
-4. Copy the key
-
-**Format**: `AIza...`
-
----
-
-### Optional: Voyage AI API Key
-
-**Used for**: Embeddings and reranking in Continue.dev
+**Required for**: Codex CLI sessions (local sandboxed implementation agent)
 
 **Steps**:
-1. Go to [dash.voyageai.com](https://dash.voyageai.com)
-2. Sign up or log in
-3. Navigate to **API Keys**
-4. Create new key
-5. Copy the key
+1. Go to [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+2. Click **Create new secret key**
+3. Name it (e.g., "repo-skeletor-codex")
+4. Copy the key (shown once)
 
-**Format**: `pa-...`
+**Format**: `sk-proj-...` or `sk-...`
+
+**Tips**:
+- Scope the key to a specific project when possible
+- Set a monthly usage limit
+- Rotate quarterly; revoke immediately on any suspicion of leak
 
 ---
 
@@ -500,22 +484,25 @@ ANTHROPIC_API_KEY=sk-ant-...
 
 ### Full Integration Setup
 ```bash
-# AI
+# AI agents
 ANTHROPIC_API_KEY=sk-ant-...
-GOOGLE_AI_API_KEY=AIza...
-VOYAGE_API_KEY=pa-...
+OPENAI_API_KEY=sk-proj-...
 
-# Integrations
+# Integrations (MCP + workflows)
 LINEAR_API_KEY=lin_api_...
 LINEAR_TEAM_ID=a1b2c3d4-...
 NOTION_API_KEY=secret_...
 NOTION_SPEC_DATABASE_ID=abc123...
 GITHUB_TOKEN=ghp_...
+CONTEXT7_API_KEY=...
+SENTRY_AUTH_TOKEN=...
 
-# Optional
+# Optional CI / deploy
 CODECOV_TOKEN=...
 SNYK_TOKEN=...
 SLACK_WEBHOOK_URL=https://hooks.slack.com/...
+VERCEL_TOKEN=...
+DATABASE_URL=postgresql://...
 ```
 
 ---

@@ -24,7 +24,7 @@
 
 ## Overview
 
-This style guide defines the coding standards for **{{PROJECT_NAME}}**. All code, whether written by humans or AI assistants (Claude, Gemini, Continue.dev), must adhere to these guidelines.
+This style guide defines the coding standards for **{{PROJECT_NAME}}**. All code, whether written by humans or AI assistants (Claude Code, Codex, Copilot), must adhere to these guidelines.
 
 **Core Principles:**
 - **Clarity over cleverness** - Code should be easy to understand
@@ -1172,7 +1172,7 @@ async function getUserCached(userId: string): Promise<User | null> {
 
 ## AI Assistant Instructions
 
-### For All AI Assistants (Claude, Gemini, Continue.dev)
+### For All AI Assistants (Claude Code, Codex, Copilot)
 
 When generating code for **{{PROJECT_NAME}}**, you MUST:
 

@@ -103,128 +103,97 @@ Edit `settings.json` to control Claude's behavior:
 
 ---
 
-### Continue.dev Configuration
+### Codex CLI Configuration
 
-Edit `config.yaml` to customize Continue.dev:
+Edit `.codex/config.toml` to customize OpenAI Codex CLI behavior. The config is TOML, not YAML — keep that in mind when editing.
 
-#### 1. Change Models
+#### 1. Change Models and Approval Policy
 
-**Switch to different models**:
-```yaml
-models:
-  # Use GPT-4 instead of Claude
-  - name: "gpt4"
-    provider: "openai"
-    model: "gpt-4-turbo-preview"
-    apiKey: "${OPENAI_API_KEY}"
-    contextLength: 128000
+```toml
+# Default model and safety posture
+model = "gpt-5-codex"
+approval_policy = "on-request"     # alternatives: "never", "always"
+sandbox_mode = "workspace-write"   # alternatives: "read-only", "danger-full-access"
 
-  # Use local Ollama model
-  - name: "local"
-    provider: "ollama"
-    model: "codellama:34b"
-    apiBase: "http://localhost:11434"
-    contextLength: 16384
-
-# Set as defaults
-chat: gpt4
-autocomplete: local
+# Shell env policy — tokens/keys are blocked by default
+[shell_environment_policy]
+inherit = "core"
+exclude = ["*_TOKEN", "*_SECRET", "*_KEY", "*_PASSWORD"]
 ```
 
-**Add specialized models**:
-```yaml
-models:
-  - name: "code-review"
-    provider: "anthropic"
-    model: "claude-sonnet-4-20250514"
-    systemMessage: "You are a code review expert. Be thorough but constructive."
-    
-  - name: "quick-edits"
-    provider: "anthropic"
-    model: "claude-haiku-4-20250514"
+#### 2. Profiles for Different Workflows
+
+```toml
+# Read-only review profile (safe for exploration)
+[profiles.review]
+approval_policy = "never"
+sandbox_mode = "read-only"
+
+# Ship profile — only asks on failures
+[profiles.ship]
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
 ```
 
-#### 2. Custom Slash Commands
+Invoke with `codex --profile review` or `codex --profile ship`.
 
-**Add project-specific commands**:
-```yaml
-slashCommands:
-  - name: "api-endpoint"
-    description: "Generate REST API endpoint"
-    prompt: |
-      Generate a complete REST API endpoint with:
-      - Express route handler
-      - Request validation (Zod)
-      - Error handling
-      - OpenAPI documentation
-      - Unit tests
+#### 3. Shared MCP Catalog
 
-  - name: "component"
-    description: "Create React component"
-    prompt: |
-      Create a React component with:
-      - TypeScript props interface
-      - Styled components
-      - Storybook story
-      - Unit tests with React Testing Library
-      
-  - name: "db-migration"
-    description: "Generate database migration"
-    prompt: |
-      Generate a Prisma migration with:
-      - Schema changes
-      - Up migration
-      - Down migration
-      - Seed data if needed
+Codex reads the same MCP servers from `.mcp.json` via mirror entries in `.codex/config.toml`:
+
+```toml
+[mcp_servers.linear]
+transport = "http"
+url = "https://mcp.linear.app/sse"
+
+[mcp_servers.notion]
+transport = "http"
+url = "https://mcp.notion.com/mcp"
+
+[mcp_servers.github]
+transport = "stdio"
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-github"]
+env = { GITHUB_PERSONAL_ACCESS_TOKEN = "${GITHUB_TOKEN}" }
 ```
 
-#### 3. Add Context Providers
+Keep `.mcp.json` and `.codex/config.toml` in sync — if you add a server to one, add it to the other. `AGENTS.md` lists the authoritative catalog.
 
-**Add custom documentation**:
-```yaml
-contextProviders:
-  - name: "docs"
-    params:
-      sites:
-        - name: "Your API Docs"
-          startUrl: "https://docs.yourproject.com"
-        - name: "Internal Wiki"
-          startUrl: "https://wiki.company.com/project"
+---
+
+### Claude Code Slash Commands and Subagents
+
+Add project-specific slash commands in `.claude/commands/<name>.md` with frontmatter:
+
+```markdown
+---
+description: Generate a REST API endpoint with validation and tests
+---
+
+Generate a complete REST API endpoint for $ARGUMENTS with:
+- Express route handler
+- Zod request validation
+- Error handling with consistent { success, data, error } shape
+- OpenAPI documentation block
+- Vitest unit tests covering happy path + error paths
 ```
 
-**Add custom search**:
-```yaml
-contextProviders:
-  - name: "database-schema"
-    type: "custom"
-    command: "npx prisma db pull && cat prisma/schema.prisma"
-```
+Add subagents in `.claude/agents/<name>.md`:
 
-#### 4. Project-Specific Rules
+```markdown
+---
+name: code-reviewer
+description: Senior reviewer — security, performance, testability. Trigger on PR-scoped reviews.
+tools: Read, Grep, Glob, Bash
+model: claude-sonnet-4-6
+---
 
-```yaml
-rules:
-  - name: "api-validation"
-    pattern: "**/api/**/*.ts"
-    instructions: |
-      - All inputs must be validated with Zod
-      - Return consistent { success, data, error } format
-      - Log all errors with request ID
+You are a senior reviewer. Check the diff for:
+1. Security (input validation, secrets, authz)
+2. Performance (N+1, unbounded loops, memory)
+3. Testability (coverage of edge cases, mocks vs real deps)
 
-  - name: "react-performance"
-    pattern: "**/*.tsx"
-    instructions: |
-      - Memoize expensive calculations
-      - Use React.memo for pure components
-      - Avoid inline function definitions in JSX
-
-  - name: "test-quality"
-    pattern: "**/*.test.ts"
-    instructions: |
-      - Minimum 80% code coverage
-      - Test edge cases and error paths
-      - Use descriptive test names
-      - Mock external dependencies
+Cite file:line references. Approve only if none of the above are flagged.
 ```
 
 ---

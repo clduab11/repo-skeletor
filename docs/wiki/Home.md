@@ -17,6 +17,7 @@ Welcome to the **repo-skeletor** documentation! This repository provides a maxim
 ## 📚 Documentation
 
 ### 🚀 Getting Started
+- **[Click-By-Click First Fork](./Click-By-Click-First-Fork.md)** - 👋 **NEW TO THIS?** - Screen-by-screen walkthrough for non-dev first-timers
 - **[Proper Template Usage](./Proper-Template-Usage.md)** - ⭐ **START HERE** - Correct way to use this template
 - **[Common Mistakes](./Common-Mistakes.md)** - ⚠️ Learn what NOT to do (REP-11 case study)
 - **[Quick Start Guide](./Quick-Start-Guide.md)** - Get up and running in minutes
@@ -34,7 +35,7 @@ Welcome to the **repo-skeletor** documentation! This repository provides a maxim
 
 repo-skeletor is a comprehensive repository template that integrates:
 
-- **AI Assistants**: Claude Code, Gemini, Continue.dev
+- **AI Assistants**: Claude Code (primary), Codex CLI, GitHub Copilot
 - **Project Management**: Linear issue tracking, Notion documentation
 - **Automation**: GitHub Actions for CI/CD, automated syncing, and AI-powered code reviews
 - **Developer Tools**: MCP servers for enhanced AI context and capabilities
@@ -47,7 +48,7 @@ repo-skeletor is a comprehensive repository template that integrates:
 
 ## 💡 Features
 
-- ✅ Pre-configured AI assistants with Claude, Gemini, and Continue.dev
+- ✅ Pre-configured AI assistants — Claude Code (primary), Codex CLI, GitHub Copilot — sharing a single MCP catalog
 - ✅ Automated Linear ↔ Notion synchronization
 - ✅ GitHub Actions workflows for CI/CD and deployments
 - ✅ MCP (Model Context Protocol) servers for enhanced AI capabilities

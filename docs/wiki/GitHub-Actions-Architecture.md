@@ -227,7 +227,7 @@ The workflow automatically reviews PRs using:
 ```yaml
 prompt: |
   Review this PR for:
-  1. Code quality and adherence to .gemini/styleguide.md
+  1. Code quality and adherence to docs/coding-style.md (and hard rules in AGENTS.md / CLAUDE.md)
   2. Security vulnerabilities
   3. Performance implications
   4. Test coverage

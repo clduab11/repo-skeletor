@@ -273,9 +273,10 @@ You're all set! Now you can:
   ```
 
 - **Use AI assistants:**
-  - Mention `@claude` in PR comments
-  - Use Continue.dev in your editor
-  - Use Gemini for code generation
+  - Mention `@claude` in PR comments (triggers `claude.yml` workflow)
+  - Run `claude` in your terminal for Claude Code subagents + slash commands
+  - Run `codex` (Codex CLI) for sandboxed implementation with shared MCP catalog
+  - Use GitHub Copilot in your editor for inline completions
 
 - **Create Linear issues:**
   - Issues automatically sync to Notion

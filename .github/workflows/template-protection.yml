@@ -36,10 +36,12 @@ jobs:
           # Files to check
           FILES_TO_CHECK=(
             "README.md"
+            "AGENTS.md"
+            "CLAUDE.md"
             "settings.json"
             ".claude/settings.json"
-            ".gemini/config.yaml"
-            ".continue/config.yaml"
+            ".mcp.json"
+            ".codex/config.toml"
           )
           
           VIOLATIONS_FOUND=0
@@ -73,8 +75,10 @@ jobs:
           TEMPLATE_FILES=(
             "settings.json"
             ".claude/settings.json"
-            ".gemini/config.yaml"
-            ".continue/config.yaml"
+            ".mcp.json"
+            ".codex/config.toml"
+            "AGENTS.md"
+            "CLAUDE.md"
           )
           
           MISSING_PLACEHOLDERS=0
@@ -99,12 +103,12 @@ jobs:
           
           REQUIRED_DIRS=(
             ".claude"
-            ".gemini"
-            ".continue"
-            ".continue/mcpServers"
+            ".claude/commands"
+            ".claude/agents"
+            ".codex"
             ".github/workflows"
             "docs/wiki"
-            "template"
+            "scripts"
           )
           
           MISSING_DIRS=0
@@ -118,15 +122,18 @@ jobs:
           
           REQUIRED_FILES=(
             "README.md"
+            "AGENTS.md"
+            "CLAUDE.md"
+            "FORK_AND_CUSTOMIZE.md"
             "setup.sh"
-            "settings.json"
             ".claude/settings.json"
-            ".gemini/config.yaml"
-            ".gemini/styleguide.md"
-            ".continue/config.yaml"
-            ".continue/mcpServers/mcp-servers.yaml"
-            "template/README.md"
-            "template/setup.sh"
+            ".mcp.json"
+            ".codex/config.toml"
+            "docs/coding-style.md"
+            ".pre-commit-config.yaml"
+            ".github/branch-protection.json"
+            "scripts/install-hooks.sh"
+            "scripts/apply-branch-protection.sh"
           )
           
           MISSING_FILES=0

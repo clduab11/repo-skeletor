@@ -80,7 +80,7 @@ If you accidentally pushed to the template:
 
 Forgetting to run `setup.sh` means:
 - Placeholders like `{{PROJECT_NAME}}` remain in configuration files
-- AI assistants (Claude, Gemini, Continue.dev) are misconfigured
+- AI assistants (Claude Code, Codex CLI, Copilot) are misconfigured
 - GitHub Actions workflows may fail
 - Documentation references wrong project name
 
@@ -163,14 +163,16 @@ Editing files in the `template/` directory when you meant to edit root files:
 
 ```
 your-project/
-├── .claude/settings.json      ← Edit these (your project config)
-├── .gemini/config.yaml        ← Edit these
-├── .continue/config.yaml      ← Edit these
+├── .claude/settings.json      ← Edit this (Claude Code config)
+├── .claude/commands/          ← Edit these (slash commands)
+├── .claude/agents/            ← Edit these (subagents)
+├── .codex/config.toml         ← Edit this (Codex CLI config)
+├── .mcp.json                  ← Edit this (shared MCP catalog)
+├── AGENTS.md                  ← Edit this (cross-agent source of truth)
+├── CLAUDE.md                  ← Edit this (Claude-specific nuance)
 ├── README.md                  ← Edit this
 ├── setup.sh                   ← Run this once
-└── template/                  ← DON'T edit these (backup)
-    ├── README.md              ← Reference only
-    └── setup.sh               ← Reference only
+└── docs/wiki/                 ← Edit these (project docs)
 ```
 
 The `template/` directory is a **backup reference**. After running `setup.sh`, you should edit the files in the root and subdirectories, not in `template/`.

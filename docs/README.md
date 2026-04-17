@@ -27,7 +27,7 @@ The documentation covers:
    - First project configuration
 
 2. **Configuration**
-   - AI assistant settings (Claude, Gemini, Continue.dev)
+   - AI assistant settings (Claude Code, Codex CLI, GitHub Copilot)
    - GitHub Actions secrets
    - API key management
    - MCP server setup
@@ -66,8 +66,10 @@ Please follow these guidelines:
 
 ## 🔗 External Resources
 
+- [Claude Code CLI docs](https://docs.claude.com/en/docs/claude-code)
 - [Claude Code GitHub Action](https://github.com/anthropics/claude-code-action)
-- [Continue.dev Documentation](https://docs.continue.dev)
+- [OpenAI Codex CLI](https://platform.openai.com/docs/guides/codex)
+- [Model Context Protocol (MCP) spec](https://modelcontextprotocol.io)
 - [Linear API Documentation](https://developers.linear.app)
 - [Notion API Documentation](https://developers.notion.com)
 

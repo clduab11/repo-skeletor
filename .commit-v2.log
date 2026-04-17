@@ -1,0 +1,45 @@
+﻿repo: C:\Users\cld-main\Desktop\praxen-branding\praxen-brand-launch\repo-skeletor
+user: clduab11 <185000089+clduab11@users.noreply.github.com>
+==== pre-status ====
+## main...origin/main
+ D .continue/config.yaml
+ D .continue/mcpServers/mcp-servers.yaml
+ D .gemini/config.yaml
+ D .gemini/styleguide.md
+ M .github/copilot-instructions.md
+ M .github/labels.yml
+ M .github/workflows/claude.yml
+ M .github/workflows/template-protection.yml
+ M .gitignore
+ M CONTRIBUTING.md
+ M FORK_AND_CUSTOMIZE.md
+ M README.md
+ M docs/README.md
+ M docs/wiki/Common-Mistakes.md
+ M docs/wiki/Customization-Guide.md
+ M docs/wiki/GitHub-Actions-Architecture.md
+ M docs/wiki/Home.md
+ M docs/wiki/Proper-Template-Usage.md
+ M docs/wiki/Quick-Start-Guide.md
+ M docs/wiki/Secrets-and-Environment-Setup.md
+ M docs/wiki/Template-Structure.md
+ M launcher/INTEGRATION.md
+ M setup.sh
+?? .claude/agents/
+?? .claude/commands/
+?? .codex/
+?? .commit-v2.log
+?? .commit-v2.msg
+?? .commit-v2.ps1
+?? .github/branch-protection.json
+?? .markdownlint.yaml
+?? .mcp.json
+?? .pre-commit-config.yaml
+?? AGENTS.md
+?? CLAUDE.md
+?? docs/coding-style.md
+?? docs/wiki/Click-By-Click-First-Fork.md
+?? scripts/
+
+exit=0
+==== add ====
